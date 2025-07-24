@@ -9,8 +9,8 @@ export default function Product() {
       <div>
         <PageBreadcrumb pageTitle="Quản lý sản phẩm" />
         <div className="space-y-6">
-          <ComponentCard buttonTitle="Thêm sản phẩm">
-            <BasicTableOne column1="Tên sản phẩm" column2="Giá sản phẩm" column3="Số lượng sản phẩm" column4="Hành động"/>
+          <ComponentCard title="Danh sách sản phẩm" desc="Thêm sản phẩm" hrefLink="/add-product">
+            <BasicTableOne column1="Tên sản phẩm" column2="Mã sản phẩm" column3="Giá sản phẩm" column4="Số lượng sản phẩm" column5="Hành động"/>
           </ComponentCard>
         </div>
       </div>
