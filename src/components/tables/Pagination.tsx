@@ -1,3 +1,4 @@
+"use client";
 type PaginationProps = {
   currentPage: number;
   totalPages: number;

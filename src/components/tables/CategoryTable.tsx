@@ -8,8 +8,8 @@ import {
   TableRow,
 } from "../ui/table";
 import api from "@/app/lib/axios";
-import Image from "next/image";
 import Link from "next/link";
+import { Category } from "@/interface/ICategory";
 
 interface TitleHeaderProps {
   column1?: string;
@@ -19,51 +19,47 @@ interface TitleHeaderProps {
   column5?: string;
 }
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  discount: number;
-  images: string;
-  slug: string;
-  barcode: string;
-  expiry_date: Date;
-  origin: string;
-  weight_unit: string;
-  description?: string; // nullable
-  quantity: number;
-  purchase: number; // default: 0
-}
-
-const BasicTableOne: React.FC<TitleHeaderProps> = ({
+const CategoryTable: React.FC<TitleHeaderProps> = ({
   column1,
   column2,
   column3,
   column4,
   column5,
 }) => {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    api.get("/products").then((res) => {
+    api.get("/categories").then((res) => {
       const data = res.data;
-      let productList: Product[] = [];
+      let categoryList: Category[] = [];
 
       if (Array.isArray(data)) {
-        productList = data;
+        categoryList = data;
       } else if (
         data &&
         typeof data === "object" &&
-        Array.isArray((data as { products?: unknown }).products)
+        Array.isArray((data as { category?: unknown }).category)
       ) {
-        productList = (data as { products: Product[] }).products;
+        categoryList = (data as { category: Category[] }).category;
       }
 
-      setAllProducts(productList);
+      setAllCategories(categoryList);
       setLoading(false);
     });
   }, []);
 
+  const handleDelete = (id: number | undefined, e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (!id) return;
+      api.delete(`/categories/${id}`);
+      alert("Xóa thành công");
+      setAllCategories((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Xóa bị lỗi", error);
+    }
+  };
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
@@ -113,47 +109,40 @@ const BasicTableOne: React.FC<TitleHeaderProps> = ({
                     Đang tải sản phẩm...
                   </TableCell>
                 </TableRow>
+              ) : allCategories.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    className="text-center py-4 text-gray-500"
+                    colSpan={5}
+                  >
+                    Không có danh mục nào
+                  </TableCell>
+                </TableRow>
               ) : (
-                allProducts.map((item) => (
+                allCategories.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="px-5 py-4 text-start">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 overflow-hidden rounded-full">
-                          <Image
-                            width={40}
-                            height={40}
-                            src={"/images/product/product-05.jpg"}
-                            alt={item.name}
-                          />
-                        </div>
                         <div>
                           <span className="block font-medium">{item.name}</span>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="px-5 py-4 text-start">
-                      {item.barcode}
-                    </TableCell>
-                    <TableCell className="px-5 py-4 text-start">
-                      {item.price}
-                    </TableCell>
-                    <TableCell className="px-5 py-4 text-start">
-                      {item.quantity}
-                    </TableCell>
-                    <TableCell className="px-5 py-4 text-start">
                       <div className="flex items-center gap-3 ">
                         <Link
                           className="px-3 py-3 bg-blue-500 text-white rounded-xl"
-                          href="#"
+                          href={`/edit-category/${item.id}`}
                         >
                           Sửa
                         </Link>
-                        <Link
+
+                        <button
                           className="px-3 py-3 bg-red-500 text-white rounded-xl"
-                          href="#"
+                          onClick={(e) => handleDelete(item.id, e)}
                         >
                           Xoá
-                        </Link>
+                        </button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -167,4 +156,4 @@ const BasicTableOne: React.FC<TitleHeaderProps> = ({
   );
 };
 
-export default BasicTableOne;
+export default CategoryTable;

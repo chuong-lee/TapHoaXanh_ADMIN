@@ -35,7 +35,7 @@ interface Product {
   purchase: number; // default: 0
 }
 
-const BasicTableOne: React.FC<TitleHeaderProps> = ({
+const ProductTable: React.FC<TitleHeaderProps> = ({
   column1,
   column2,
   column3,
@@ -64,6 +64,21 @@ const BasicTableOne: React.FC<TitleHeaderProps> = ({
     });
   }, []);
 
+  const handleDeleteProduct = (
+    id: number,
+    name: string,
+    e: React.FormEvent
+  ) => {
+    e.preventDefault();
+    try {
+      if (!id) return;
+      api.delete(`/products/${id}`);
+      alert(`Sản phẩm ${name} đã được xóa thành công`);
+      setAllProducts((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.log("Xảy ra lỗi", error);
+    }
+  };
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
@@ -109,8 +124,17 @@ const BasicTableOne: React.FC<TitleHeaderProps> = ({
             <TableBody className="divide-y divide-gray-100">
               {loading ? (
                 <TableRow>
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-4 text-gray-500">
                     Đang tải sản phẩm...
+                  </TableCell>
+                </TableRow>
+              ) : allProducts.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    className="text-center py-4 text-gray-500"
+                    colSpan={5}
+                  >
+                    Không có sản phẩm nào.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -141,19 +165,21 @@ const BasicTableOne: React.FC<TitleHeaderProps> = ({
                       {item.quantity}
                     </TableCell>
                     <TableCell className="px-5 py-4 text-start">
-                      <div className="flex items-center gap-3 ">
+                      <div className="flex items-center gap-3">
                         <Link
                           className="px-3 py-3 bg-blue-500 text-white rounded-xl"
-                          href="#"
+                          href={`/edit-product/${item.id}`}
                         >
                           Sửa
                         </Link>
-                        <Link
+                        <button
                           className="px-3 py-3 bg-red-500 text-white rounded-xl"
-                          href="#"
+                          onClick={(e) =>
+                            handleDeleteProduct(item.id, item.name, e)
+                          }
                         >
                           Xoá
-                        </Link>
+                        </button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -167,4 +193,4 @@ const BasicTableOne: React.FC<TitleHeaderProps> = ({
   );
 };
 
-export default BasicTableOne;
+export default ProductTable;
