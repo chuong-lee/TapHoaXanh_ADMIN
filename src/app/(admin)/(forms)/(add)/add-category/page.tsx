@@ -12,10 +12,7 @@ export default function AddCategory() {
   return (
     <div>
       <PageBreadcrumb pageTitle="Thêm sản phẩm" />
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="space-y-6">
-          <FormAddCategory />
-        </div>
+      <div className="grid grid-cols-1 gap-6">
         <div className="space-y-6">
           <FormAddCategory />
         </div>

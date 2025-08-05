@@ -13,7 +13,7 @@ interface Category {
   id?: number;
   name?: string;
   slug?: string;
-  parentId?: string;
+  parentId?: number;
 }
 
 export default function FormAddCategory() {
@@ -108,7 +108,7 @@ export default function FormAddCategory() {
             <Label>Tên danh mục</Label>
             <Input
               type="text"
-              placeholder="Nhập tên sản phẩm"
+              placeholder="Nhập tên danh mục"
               value={category}
               onChange={handleChange}
             />
@@ -120,7 +120,6 @@ export default function FormAddCategory() {
             <Label>Slug</Label>
             <Input
               type="text"
-              placeholder="Nhập tên sản phẩm"
               value={slug}
               onChange={handleChange}
               disabled={true}

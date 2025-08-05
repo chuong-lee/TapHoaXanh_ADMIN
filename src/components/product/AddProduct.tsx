@@ -12,6 +12,9 @@ import { Category } from "@/interface/ICategory";
 import { defaultProduct, Product } from "@/interface/IProduct";
 import { Brand } from "@/interface/IBrand";
 import DatePicker from "../form/date-picker";
+import TextArea from "../form/input/TextArea";
+import DropzoneComponent from "../form/form-elements/DropZone";
+import FileInput from "../form/input/FileInput";
 
 export default function FormAddProduct() {
   const [product, setProduct] = useState<Product>(defaultProduct);
@@ -87,6 +90,7 @@ export default function FormAddProduct() {
     try {
       await api.post("/products", data);
       alert("Tạo thành công");
+      setProduct(defaultProduct);
       setErrors({});
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -130,6 +134,24 @@ export default function FormAddProduct() {
       ...prev,
       expiry_date: currentDateString, // Hoặc dùng: dates[0].toISOString().split('T')[0]
     }));
+  };
+
+  const handleDescriptionChange = (value: string) => {
+    setProduct((prev) => ({
+      ...prev,
+      description: value,
+    }));
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imagePath = `/images/product/${file.name}`;
+      setProduct((prev) => ({
+        ...prev,
+        images: imagePath,
+      }));
+    }
   };
 
   return (
@@ -249,21 +271,15 @@ export default function FormAddProduct() {
           </div>
           <div>
             <Label>Mô tả</Label>
-            <Input
-              type="text"
+            <TextArea
               value={product.description}
-              name="description"
-              onChange={handleChange}
+              onChange={handleDescriptionChange}
+              rows={6}
             />
           </div>
           <div>
             <Label>Hình ảnh</Label>
-            <Input
-              type="text"
-              value={product.images}
-              name="images"
-              onChange={handleChange}
-            />
+            <FileInput onChange={handleFileChange} className="custom-class" />
           </div>
         </div>
 
