@@ -101,7 +101,7 @@ export default function FormAddCategory() {
   };
 
   return (
-    <ComponentCard title="Thêm sản phẩm">
+    <ComponentCard title="Thêm danh mục">
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
           <div>

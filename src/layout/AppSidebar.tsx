@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState,useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -15,34 +15,51 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    icon: '',
-    name: "Dashboard",
+    icon: "",
+    name: "Thống kê",
     path: "/dashboard",
   },
   {
-    icon: '',
-    name: "Product",
-    path: "/product",
+    icon: "",
+    name: "Quản lý sản phẩm",
+
+    subItems: [
+      {
+        name: "Sản phẩm",
+        path: "/product",
+        pro: false,
+      },
+      {
+        name: "Sản phẩm biến thể",
+        path: "/product-variant",
+        pro: false,
+      },
+      {
+        name: "Hinh ảnh sản phẩm",
+        path: "/product-images",
+        pro: false,
+      },
+    ],
   },
   {
-    icon: '',
-    name: "User Profile",
+    icon: "",
+    name: "Quan lý người dùng",
     path: "/profile",
   },
 
   {
-    name: "Category",
-    icon: '',
+    name: "Quản lý danh mục",
+    icon: "",
     path: "/category",
   },
   {
-    name: "Voucher",
-    icon: '',
+    name: "Quản lý voucher",
+    icon: "",
     path: "/voucher",
   },
   {
-    name: "Order",
-    icon: '',
+    name: "Quanr lý đơn hàng",
+    icon: "",
     path: "/order",
   },
 ];
@@ -187,7 +204,7 @@ const AppSidebar: React.FC = () => {
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // const isActive = (path: string) => path === pathname;
-   const isActive = useCallback((path: string) => path === pathname, [pathname]);
+  const isActive = useCallback((path: string) => path === pathname, [pathname]);
 
   useEffect(() => {
     // Set the height of the submenu items when the submenu is opened
@@ -282,8 +299,6 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
-
-            
           </div>
         </nav>
         {/* {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null} */}

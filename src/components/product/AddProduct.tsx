@@ -1,20 +1,19 @@
 "use client";
 
 import api from "@/app/lib/axios";
+import { Brand } from "@/interface/IBrand";
+import { Category } from "@/interface/ICategory";
+import { defaultProduct, Product } from "@/interface/IProduct";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ComponentCard from "../common/ComponentCard";
+import DatePicker from "../form/date-picker";
+import FileInput from "../form/input/FileInput";
 import Input from "../form/input/InputField";
+import TextArea from "../form/input/TextArea";
 import Label from "../form/Label";
 import Select, { Option } from "../form/Select";
-import { Category } from "@/interface/ICategory";
-import { defaultProduct, Product } from "@/interface/IProduct";
-import { Brand } from "@/interface/IBrand";
-import DatePicker from "../form/date-picker";
-import TextArea from "../form/input/TextArea";
-import DropzoneComponent from "../form/form-elements/DropZone";
-import FileInput from "../form/input/FileInput";
 
 export default function FormAddProduct() {
   const [product, setProduct] = useState<Product>(defaultProduct);

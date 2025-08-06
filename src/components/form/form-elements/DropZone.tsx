@@ -1,12 +1,25 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import ComponentCard from "../../common/ComponentCard";
 import { useDropzone } from "react-dropzone";
+import Image from "next/image";
 
-const DropzoneComponent: React.FC = () => {
+type DropzoneComponentProps = {
+  onChangeImages?: (files: File[]) => void;
+};
+
+const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
+  onChangeImages,
+}) => {
+  const [listImages, setListImages] = useState<File[]>([]);
   const onDrop = (acceptedFiles: File[]) => {
+    const newList = [...listImages, ...acceptedFiles];
     console.log("Files dropped:", acceptedFiles);
     // Handle file uploads here
+    setListImages(newList);
+    if (onChangeImages) {
+      onChangeImages(newList);
+    }
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -19,7 +32,7 @@ const DropzoneComponent: React.FC = () => {
     },
   });
   return (
-    <ComponentCard title="Dropzone">
+    <ComponentCard title="Thêm hình ảnh sản phẩm">
       <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-brand-500 dark:border-gray-700 rounded-xl hover:border-brand-500">
         <form
           {...getRootProps()}
@@ -69,6 +82,23 @@ const DropzoneComponent: React.FC = () => {
             </span>
           </div>
         </form>
+      </div>
+
+      <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {listImages.map((item, index) => (
+          <div
+            key={index}
+            className="flex items-center justify-center w-[200px] h[200px]"
+          >
+            <Image
+              width={200}
+              height={200}
+              src={URL.createObjectURL(item)}
+              alt={item.name}
+              className="rounded-md w-full h-full object-cover"
+            />
+          </div>
+        ))}
       </div>
     </ComponentCard>
   );

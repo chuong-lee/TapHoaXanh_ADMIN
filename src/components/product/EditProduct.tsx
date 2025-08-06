@@ -53,7 +53,6 @@ export default function FormEditProduct() {
       try {
         const response = await api.get(`/products/${id}`);
         const data = response.data;
-        console.log("🚀 ~ fetchCategory ~ data:", data);
         setProduct({
           name: data.name || "",
           price: data.price || 0,
@@ -208,6 +207,7 @@ export default function FormEditProduct() {
               id="date-picker"
               label="Ngày hết hạn"
               placeholder="Select a date"
+              defaultDate={product.expiry_date}
               onChange={handleSelectDate}
             />
           </div>
