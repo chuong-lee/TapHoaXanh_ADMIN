@@ -1,34 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
 import api from "@/app/lib/axios";
+import { GetProductImages } from "@/interface/IProduct";
 import Image from "next/image";
-import Link from "next/link";
-import { GetProductImages, ProductVariant } from "@/interface/IProduct";
+import React, { useEffect, useState } from "react";
 
-interface TitleHeaderProps {
-  column1?: string;
-  column2?: string;
-  column3?: string;
-  column4?: string;
-  column5?: string;
-}
-
-const ProductImages: React.FC<TitleHeaderProps> = ({
-  column1,
-  column2,
-  column3,
-  column4,
-  column5,
-}) => {
+const ProductImages: React.FC = () => {
   const [allProducts, setAllProducts] = useState<GetProductImages[]>([]);
+  const [selectedImage, setSelectedImage] = useState<{
+    url: string;
+    name: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const getAllProducts = async () => {
       try {
@@ -58,107 +41,57 @@ const ProductImages: React.FC<TitleHeaderProps> = ({
       console.log("Xảy ra lỗi", error);
     }
   };
+
+  const handleShowImageInfo = (e: React.MouseEvent<HTMLImageElement>) => {
+    e.preventDefault();
+    const imageUrl = e.currentTarget.src;
+    const imageName = e.currentTarget.alt;
+    setSelectedImage({ url: imageUrl, name: imageName });
+  };
+
+  const handleClose = () => setSelectedImage(null);
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full overflow-x-auto">
-        <div className="min-w-[1102px]">
-          <Table>
-            {/* Table Header */}
-            <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-              <TableRow>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  {column1}
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  {column2}
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  {column3}
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  {column4}
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  {column5}
-                </TableCell>
-              </TableRow>
-            </TableHeader>
-
-            {/* Table Body */}
-            <TableBody className="divide-y divide-gray-100">
-              {loading ? (
-                <TableRow>
-                  <TableCell className="text-center py-4 text-gray-500">
-                    Đang tải sản phẩm...
-                  </TableCell>
-                </TableRow>
-              ) : allProducts.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    className="text-center py-4 text-gray-500"
-                    colSpan={5}
-                  >
-                    Không có sản phẩm nào.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                allProducts.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="px-5 py-4 text-start">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 overflow-hidden rounded-full">
-                          <Image
-                            width={40}
-                            height={40}
-                            src={"/images/product/product-05.jpg"}
-                            alt={item.name}
-                          />
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-5 py-4 text-start">
-                      {item.name}
-                    </TableCell>
-                    <TableCell className="px-5 py-4 text-start">
-                      <div className="flex items-center gap-3">
-                        <Link
-                          className="px-3 py-3 bg-blue-500 text-white rounded-xl"
-                          href={`/edit-product/${item.id}`}
-                        >
-                          Sửa
-                        </Link>
-                        <button
-                          className="px-3 py-3 bg-red-500 text-white rounded-xl"
-                          onClick={(e) =>
-                            handleDeleteProduct(item.id, item.name, e)
-                          }
-                        >
-                          Xoá
-                        </button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
+        {loading ? (
+          <p className="text-center py-4 text-gray-500">Đang tải sản phẩm...</p>
+        ) : allProducts.length === 0 ? (
+          <p>Không có nội dung nào</p>
+        ) : (
+          allProducts.map((item) => (
+            <div key={item.id}>
+              <Image
+                width={338}
+                height={338}
+                src={`http://localhost:5000${item.image_url}`}
+                alt={item.name}
+                className="w-full h-full border border-gray-200 rounded-xl dark:border-gray-800"
+                onClick={handleShowImageInfo}
+              />
+            </div>
+          ))
+        )}
       </div>
+
+      {/* Popup hiển thị chi tiết ảnh */}
+      {/* {selectedImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-4 max-w-[80%] max-h-[80%] overflow-auto">
+            <h2 className="text-lg font-semibold mb-2">{selectedImage.name}</h2>
+            <img
+              src={selectedImage.url}
+              alt={selectedImage.name}
+              className="max-w-full max-h-[70vh] rounded-lg object-contain"
+            />
+            <button
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              onClick={handleClose}
+            >
+              Đóng
+            </button>
+          </div>
+        </div>
+      )} */}
     </div>
   );
 };

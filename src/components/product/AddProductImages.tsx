@@ -1,11 +1,7 @@
 "use client";
 
 import api from "@/app/lib/axios";
-import {
-  defaultProductImage,
-  listProduct,
-  ProductImages,
-} from "@/interface/IProduct";
+import { listProduct, ProductImages } from "@/interface/IProduct";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ComponentCard from "../common/ComponentCard";
@@ -14,8 +10,10 @@ import Label from "../form/Label";
 import Select, { Option } from "../form/Select";
 
 export default function AddImages() {
-  const [productImage, setProductImage] =
-    useState<ProductImages>(defaultProductImage);
+  const [productImage, setProductImage] = useState<ProductImages>({
+    productId: 0,
+  });
+  const [selectImage, setSelectImage] = useState<File[]>([]);
   const [products, setProducts] = useState(listProduct);
 
   useEffect(() => {
@@ -47,11 +45,24 @@ export default function AddImages() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const data = { ...productImage };
+
+    const formData = new FormData();
+    formData.append("productId", productImage.productId.toString());
+
+    // Append tất cả file vào formData (nếu bạn đang lưu list file trong state)
+    selectImage.forEach((file) => {
+      formData.append("images", file);
+    });
+
     try {
-      await api.post("/product-images", data);
+      await api.post("/product-images", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       alert("Thêm biến thể sản phẩm thành công!");
-      setProductImage(defaultProductImage);
+      setProductImage({ productId: 0 });
+      setSelectImage([]); // reset file
     } catch (error) {
       console.error("Lỗi khi thêm biến thể sản phẩm:", error);
     }
@@ -59,11 +70,7 @@ export default function AddImages() {
 
   const handleSelectImages = async (files: File[]) => {
     console.log("Selected files:", files);
-    const pathImages = files.map((file) => file.name);
-    setProductImage((prev) => ({
-      ...prev,
-      image_url: pathImages,
-    }));
+    setSelectImage(files);
   };
 
   console.log(1111, productImage);

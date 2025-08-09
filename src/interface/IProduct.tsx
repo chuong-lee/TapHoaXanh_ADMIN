@@ -25,7 +25,6 @@ export interface ProductVariant {
 
 export interface ProductImages {
   id?: number; // Optional for new product variants
-  image_url: string[];
   productId: number;
 }
 
@@ -59,10 +58,5 @@ export const defaultProductVariant: ProductVariant = {
   variant_name: "",
   price_modifier: 0,
   stock: 0,
-  productId: 0,
-};
-
-export const defaultProductImage: ProductImages = {
-  image_url: [],
   productId: 0,
 };
