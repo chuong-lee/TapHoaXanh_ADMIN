@@ -8,6 +8,8 @@ import ComponentCard from "../common/ComponentCard";
 import DropzoneComponent from "../form/form-elements/DropZone";
 import Label from "../form/Label";
 import Select, { Option } from "../form/Select";
+import { useRouter } from "next/navigation";
+import { showSuccessAndRedirect } from "@/app/utils/helper";
 
 export default function AddImages() {
   const [productImage, setProductImage] = useState<ProductImages>({
@@ -15,6 +17,7 @@ export default function AddImages() {
   });
   const [selectImage, setSelectImage] = useState<File[]>([]);
   const [products, setProducts] = useState(listProduct);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -48,8 +51,6 @@ export default function AddImages() {
 
     const formData = new FormData();
     formData.append("productId", productImage.productId.toString());
-
-    // Append tất cả file vào formData (nếu bạn đang lưu list file trong state)
     selectImage.forEach((file) => {
       formData.append("images", file);
     });
@@ -60,9 +61,9 @@ export default function AddImages() {
           "Content-Type": "multipart/form-data",
         },
       });
-      alert("Thêm biến thể sản phẩm thành công!");
       setProductImage({ productId: 0 });
       setSelectImage([]); // reset file
+      showSuccessAndRedirect("Thêm hình ảnh thành công!", router, "/product-images");
     } catch (error) {
       console.error("Lỗi khi thêm biến thể sản phẩm:", error);
     }
@@ -95,9 +96,12 @@ export default function AddImages() {
           <DropzoneComponent onChangeImages={handleSelectImages} />
         </div>
         <div className="flex justify-end space-x-4 mt-6">
-          <button className="bg-gray-300 px-3 py-3 rounded-xl">
-            <Link href="/category">Huỷ</Link>
-          </button>
+          <Link
+            href="/product-images"
+            className="bg-gray-300 px-3 py-3 rounded-xl"
+          >
+            Huỷ
+          </Link>
           <button
             className="bg-blue-700 px-3 py-3 rounded-xl text-white"
             type="submit"

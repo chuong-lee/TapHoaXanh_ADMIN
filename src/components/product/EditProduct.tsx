@@ -6,13 +6,14 @@ import { Category } from "@/interface/ICategory";
 import { defaultProduct, Product } from "@/interface/IProduct";
 import axios from "axios";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ComponentCard from "../common/ComponentCard";
 import DatePicker from "../form/date-picker";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import Select, { Option } from "../form/Select";
+import { showSuccessAndRedirect } from "@/app/utils/helper";
 
 export default function FormEditProduct() {
   const [product, setProduct] = useState<Product>(defaultProduct);
@@ -21,6 +22,7 @@ export default function FormEditProduct() {
   const [errors, setErrors] = useState<Category>({});
   const params = useParams();
   const id = params.id;
+  const router = useRouter()
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -65,8 +67,8 @@ export default function FormEditProduct() {
           weight_unit: data.weight_unit || "",
           description: data.description || "",
           quantity: data.quantity || 0,
-          categoryId: data.categoryId || 0,
-          brandId: data.brandId || 0,
+          categoryId: data.category.id || 0,
+          brandId: data.brand.id || 0,
           purchase: data.purchase || 0,
         });
       } catch (error) {
@@ -118,7 +120,7 @@ export default function FormEditProduct() {
     const { barcode, ...data } = product;
     try {
       await api.patch(`/products/${id}`, data);
-      alert("Cập nhật thành công");
+      showSuccessAndRedirect("Cập nhật sản phẩm thành công!", router, "/product");
       setErrors({});
     } catch (error) {
       if (axios.isAxiosError(error)) {

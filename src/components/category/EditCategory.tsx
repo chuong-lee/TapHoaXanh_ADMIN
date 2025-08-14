@@ -8,7 +8,8 @@ import ComponentCard from "../common/ComponentCard";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import Select, { Option } from "../form/Select";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { showSuccessAndRedirect } from "@/app/utils/helper";
 
 interface Category {
   id?: number;
@@ -25,6 +26,7 @@ export default function FormEditCategory() {
   const [errors, setErrors] = useState<Category>({});
   const params = useParams();
   const id = params.id;
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -96,7 +98,7 @@ export default function FormEditCategory() {
       setSlug("");
       setParentId("");
       setErrors({});
-      console.log("submit: ", data);
+      showSuccessAndRedirect("Cập nhật thành công!", router, "/category");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const messages = error.response?.data?.message;
@@ -158,7 +160,7 @@ export default function FormEditCategory() {
                 placeholder="Vui lòng chọn thư mục cha"
                 onChange={handleSelectChange}
                 className="dark:bg-dark-900"
-                defaultValue={`${defaultValue?.value.toString()}`}
+                defaultValue={parentId}
               />
               <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400"></span>
             </div>
@@ -166,9 +168,10 @@ export default function FormEditCategory() {
         </div>
 
         <div className="flex justify-end space-x-4 mt-6">
-          <button className="bg-gray-300 px-3 py-3 rounded-xl">
-            <Link href="/category">Huỷ</Link>
-          </button>
+          <Link href="/category" className="bg-gray-300 px-3 py-3 rounded-xl">
+            Huỷ
+          </Link>
+
           <button
             className="bg-blue-700 px-3 py-3 rounded-xl text-white"
             type="submit"

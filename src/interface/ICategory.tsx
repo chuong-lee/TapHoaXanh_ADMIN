@@ -10,4 +10,8 @@ export interface Category {
   parentId?: string;
 }
 
-
+export interface CategoryWithChildren {
+  child_id?: number;
+  child_name?: string;
+  parent_name?: string;
+}

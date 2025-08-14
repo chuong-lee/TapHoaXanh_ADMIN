@@ -1,4 +1,8 @@
 "use client";
+import api from "@/app/lib/axios";
+import useFetch from "@/hook/useFetch";
+import { CategoryWithChildren } from "@/interface/ICategory";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import {
   Table,
@@ -7,11 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import api from "@/app/lib/axios";
-import Link from "next/link";
-import { Category } from "@/interface/ICategory";
+import { PaginationPage } from "../pagination/Pagination";
 
 interface TitleHeaderProps {
+  parentId?: number;
+  search?: string;
   column1?: string;
   column2?: string;
   column3?: string;
@@ -20,34 +24,42 @@ interface TitleHeaderProps {
 }
 
 const CategoryTable: React.FC<TitleHeaderProps> = ({
+  parentId,
+  search,
   column1,
   column2,
   column3,
   column4,
   column5,
 }) => {
-  const [allCategories, setAllCategories] = useState<Category[]>([]);
+  // const { data: allCategories, loading } = useFetch<{
+  //   data: CategoryWithChildren[];
+  // }>("/categories/search");
+  const [allCategories, setAllCategories] = useState<CategoryWithChildren[]>(
+    []
+  );
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(3);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/categories").then((res) => {
-      const data = res.data;
-      let categoryList: Category[] = [];
+    const getAllProducts = async () => {
+      try {
+        const response = await api.get("/categories/search", {
+          params: { page, limit, parentId , search},
+        });
 
-      if (Array.isArray(data)) {
-        categoryList = data;
-      } else if (
-        data &&
-        typeof data === "object" &&
-        Array.isArray((data as { category?: unknown }).category)
-      ) {
-        categoryList = (data as { category: Category[] }).category;
+        setAllCategories(response.data.data);
+        setTotalPages(response.data.meta.lastPage);
+        setLoading(false);
+      } catch (error) {
+        console.error("Lỗi khi lấy sản phẩm:", error);
       }
+    };
 
-      setAllCategories(categoryList);
-      setLoading(false);
-    });
-  }, []);
+    getAllProducts();
+  }, [page, limit, parentId, search]);
 
   const handleDelete = (id: number | undefined, e: React.FormEvent) => {
     e.preventDefault();
@@ -55,104 +67,134 @@ const CategoryTable: React.FC<TitleHeaderProps> = ({
       if (!id) return;
       api.delete(`/categories/${id}`);
       alert("Xóa thành công");
-      setAllCategories((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.error("Xóa bị lỗi", error);
     }
   };
+
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full overflow-x-auto">
-        <div className="min-w-[1102px]">
-          <Table>
-            {/* Table Header */}
-            <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-              <TableRow>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  {column1}
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  {column2}
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  {column3}
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  {column4}
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  {column5}
-                </TableCell>
-              </TableRow>
-            </TableHeader>
-
-            {/* Table Body */}
-            <TableBody className="divide-y divide-gray-100">
-              {loading ? (
+    <>
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+        <div className="max-w-full overflow-x-auto">
+          <div className="min-w-[1102px]">
+            <Table>
+              {/* Table Header */}
+              <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
-                  <TableCell className="text-center py-4">
-                    Đang tải sản phẩm...
-                  </TableCell>
-                </TableRow>
-              ) : allCategories.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    className="text-center py-4 text-gray-500"
-                    colSpan={5}
-                  >
-                    Không có danh mục nào
-                  </TableCell>
-                </TableRow>
-              ) : (
-                allCategories.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="px-5 py-4 text-start">
-                      <div className="flex items-center gap-3">
-                        <div>
-                          <span className="block font-medium">{item.name}</span>
-                        </div>
-                      </div>
+                  {column1 && (
+                    <TableCell
+                      isHeader
+                      className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
+                    >
+                      {column1}
                     </TableCell>
-                    <TableCell className="px-5 py-4 text-start">
-                      <div className="flex items-center gap-3 ">
-                        <Link
-                          className="px-3 py-3 bg-blue-500 text-white rounded-xl"
-                          href={`/edit-category/${item.id}`}
-                        >
-                          Sửa
-                        </Link>
+                  )}
+                  {column2 && (
+                    <TableCell
+                      isHeader
+                      className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
+                    >
+                      {column2}
+                    </TableCell>
+                  )}
+                  {column3 && (
+                    <TableCell
+                      isHeader
+                      className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
+                    >
+                      {column3}
+                    </TableCell>
+                  )}
+                  {column4 && (
+                    <TableCell
+                      isHeader
+                      className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
+                    >
+                      {column4}
+                    </TableCell>
+                  )}
+                  {column5 && (
+                    <TableCell
+                      isHeader
+                      className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
+                    >
+                      {column5}
+                    </TableCell>
+                  )}
+                </TableRow>
+              </TableHeader>
 
-                        <button
-                          className="px-3 py-3 bg-red-500 text-white rounded-xl"
-                          onClick={(e) => handleDelete(item.id, e)}
-                        >
-                          Xoá
-                        </button>
-                      </div>
+              {/* Table Body */}
+              <TableBody className="divide-y divide-gray-100">
+                {loading ? (
+                  <TableRow>
+                    <TableCell className="text-center py-4">
+                      Đang tải sản phẩm...
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : !allCategories || allCategories.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      className="text-center py-4 text-gray-500"
+                      colSpan={5}
+                    >
+                      Không có danh mục nào
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  allCategories.map((item) => (
+                    <TableRow key={item.child_id}>
+                      <TableCell className="px-5 py-4 text-start">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <span className="block font-medium">
+                              {item.child_name}
+                            </span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-start">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <span className="block font-medium">
+                              {item.parent_name}
+                            </span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-start">
+                        <div className="flex items-center gap-3 ">
+                          <Link
+                            className="px-3 py-3 bg-blue-500 text-white rounded-xl"
+                            href={`/edit-category/${item.child_id}`}
+                          >
+                            Sửa
+                          </Link>
+
+                          <button
+                            className="px-3 py-3 bg-red-500 text-white rounded-xl"
+                            onClick={(e) => handleDelete(item.child_id, e)}
+                          >
+                            Xoá
+                          </button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </div>
-    </div>
+      {totalPages > 0 && (
+        <PaginationPage
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={(newPage) => setPage(newPage)}
+        />
+      )}
+    </>
   );
 };
 

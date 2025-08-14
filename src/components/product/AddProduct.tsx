@@ -14,12 +14,18 @@ import Input from "../form/input/InputField";
 import TextArea from "../form/input/TextArea";
 import Label from "../form/Label";
 import Select, { Option } from "../form/Select";
+import { showSuccessAndRedirect } from "@/app/utils/helper";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function FormAddProduct() {
   const [product, setProduct] = useState<Product>(defaultProduct);
   const [categories, setCategories] = useState<Category[]>([]);
   const [brand, setBrand] = useState<Brand[]>([]);
-  const [errors, setErrors] = useState<Category>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof Product, string>>>(
+    {}
+  );
+  const router = useRouter();
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -27,10 +33,68 @@ export default function FormAddProduct() {
     >
   ) => {
     const { name, value } = e.target;
+
+    // Validate ngay khi nhập
+    let errorMsg = "";
+
+    if (name === "weight_unit" && Number(value) < 0) {
+      console.log("weight_unit err");
+      errorMsg = "Đơn vị khối lượng không được âm";
+    }
+
+    if (name === "barcode") {
+      const barcodePattern = /^SP\d{4}$/; // SP + 4 chữ số
+      if (!barcodePattern.test(value)) {
+        console.log("barcode err");
+        errorMsg = "Barcode phải đúng định dạng SPxxxx (ví dụ: SP0001)";
+      }
+    }
+
+    if (name === "quantity" && Number(value) < 0) {
+      console.log("quantity err");
+
+      errorMsg = "Số lượng không được âm";
+    }
+
+    if (name === "price") {
+      const numValue = Number(value);
+
+      if (isNaN(numValue)) {
+        errorMsg = "Giá phải là số";
+      } else if (numValue < 0) {
+        errorMsg = "Giá không được âm";
+      } else if (numValue < 1000) {
+        errorMsg = "Giá tối thiểu 1000 VNĐ";
+      }
+    }
+
+    if (name === "discount") {
+      const numValue = Number(value);
+
+      if (isNaN(numValue)) {
+        errorMsg = "Giảm giá phải là số";
+      } else if (numValue < 0) {
+        errorMsg = "Giảm giá không được âm";
+      }
+    }
+
+    // Cập nhật state product
     setProduct((prev) => ({
       ...prev,
       [name]: value,
+      ...(name === "name" && { slug: slugify(value) }), // auto slug
     }));
+
+    // Cập nhật state errors
+    setErrors((prev) => {
+      const updated = { ...prev };
+      if (errorMsg) {
+        updated[name as keyof Product] = errorMsg;
+      } else {
+        delete updated[name as keyof Product];
+      }
+      return updated;
+    });
   };
 
   useEffect(() => {
@@ -88,9 +152,10 @@ export default function FormAddProduct() {
     const data = { ...product };
     try {
       await api.post("/products", data);
-      alert("Tạo thành công");
+
       setProduct(defaultProduct);
       setErrors({});
+      showSuccessAndRedirect("Thêm sản phẩm thành công!", router, "/product");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const messages = error.response?.data?.message;
@@ -129,9 +194,30 @@ export default function FormAddProduct() {
   const handleSelectDate = (dates: Date[], currentDateString: string) => {
     if (!dates || dates.length === 0) return;
 
+    const selectedDate = new Date(dates[0]);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      setErrors((prev) => ({
+        ...prev,
+        expiry_date: "Ngày hết hạn không được nhỏ hơn ngày hiện tại!",
+      }));
+      return;
+    }
+
+    // Xóa lỗi nếu đã nhập hợp lệ
+    setErrors((prev) => {
+      const updated = { ...prev };
+      delete updated.expiry_date;
+      return updated;
+    });
+
     setProduct((prev) => ({
       ...prev,
-      expiry_date: currentDateString, // Hoặc dùng: dates[0].toISOString().split('T')[0]
+      expiry_date: currentDateString, // hoặc: selectedDate.toISOString()
     }));
   };
 
@@ -179,6 +265,9 @@ export default function FormAddProduct() {
               value={product.barcode}
               onChange={handleChange}
             />
+            {errors.barcode && (
+              <p className="text-red-500 text-sm mt-1">{errors.barcode}</p>
+            )}
           </div>
           <div>
             <Label>Xuất xứ</Label>
@@ -189,6 +278,9 @@ export default function FormAddProduct() {
               value={product.origin}
               onChange={handleChange}
             />
+            {errors.origin && (
+              <p className="text-red-500 text-sm mt-1">{errors.origin}</p>
+            )}
           </div>
           <div>
             <DatePicker
@@ -197,6 +289,9 @@ export default function FormAddProduct() {
               placeholder="Select a date"
               onChange={handleSelectDate}
             />
+            {errors.expiry_date && (
+              <p className="text-red-500 text-sm mt-1">{errors.expiry_date}</p>
+            )}
           </div>
           <div>
             <Label>Cân nặng</Label>
@@ -207,6 +302,9 @@ export default function FormAddProduct() {
               value={product.weight_unit}
               onChange={handleChange}
             />
+            {errors.weight_unit && (
+              <p className="text-red-500 text-sm mt-1">{errors.weight_unit}</p>
+            )}
           </div>
           <div>
             <Label>Slug</Label>
@@ -225,6 +323,9 @@ export default function FormAddProduct() {
               name="quantity"
               onChange={handleChange}
             />
+            {errors.quantity && (
+              <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>
+            )}
           </div>
           <div>
             <Label>Giá sản phẩm</Label>
@@ -234,15 +335,21 @@ export default function FormAddProduct() {
               name="price"
               onChange={handleChange}
             />
+            {errors.price && (
+              <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+            )}
           </div>
           <div>
-            <Label>Giảm giá</Label>
+            <Label>Giảm giá ( theo đơn vị % )</Label>
             <Input
               type="text"
               value={product.discount}
               name="discount"
               onChange={handleChange}
             />
+            {errors.discount && (
+              <p className="text-red-500 text-sm mt-1">{errors.discount}</p>
+            )}
           </div>
           <div>
             <Label>Loại danh mục</Label>
@@ -283,9 +390,9 @@ export default function FormAddProduct() {
         </div>
 
         <div className="flex justify-end space-x-4 mt-6">
-          <button className="bg-gray-300 px-3 py-3 rounded-xl">
-            <Link href="/category">Huỷ</Link>
-          </button>
+          <Link href="/product" className="bg-gray-300 px-3 py-3 rounded-xl">
+            Huỷ
+          </Link>
           <button
             className="bg-blue-700 px-3 py-3 rounded-xl text-white"
             type="submit"

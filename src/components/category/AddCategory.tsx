@@ -1,8 +1,10 @@
 "use client";
 
 import api from "@/app/lib/axios";
+import { showSuccessAndRedirect } from "@/app/utils/helper";
 import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ComponentCard from "../common/ComponentCard";
 import Input from "../form/input/InputField";
@@ -22,6 +24,7 @@ export default function FormAddCategory() {
   const [parentId, setParentId] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [errors, setErrors] = useState<Category>({});
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -74,6 +77,7 @@ export default function FormAddCategory() {
       setSlug("");
       setParentId("");
       setErrors({});
+      showSuccessAndRedirect("Thêm thành công!", router, "/category");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const messages = error.response?.data?.message;
@@ -97,7 +101,6 @@ export default function FormAddCategory() {
 
   const handleSelectChange = (value: string) => {
     setParentId(value);
-    console.log("Selected value:", value);
   };
 
   return (
@@ -137,15 +140,16 @@ export default function FormAddCategory() {
                 onChange={handleSelectChange}
                 className="dark:bg-dark-900"
               />
+
               <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400"></span>
             </div>
           </div>
         </div>
 
         <div className="flex justify-end space-x-4 mt-6">
-          <button className="bg-gray-300 px-3 py-3 rounded-xl">
-            <Link href="/category">Huỷ</Link>
-          </button>
+          <Link href="/category" className="bg-gray-300 px-3 py-3 rounded-xl">
+            Huỷ
+          </Link>
           <button
             className="bg-blue-700 px-3 py-3 rounded-xl text-white"
             type="submit"

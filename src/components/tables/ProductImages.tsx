@@ -49,7 +49,6 @@ const ProductImages: React.FC = () => {
     setSelectedImage({ url: imageUrl, name: imageName });
   };
 
-  const handleClose = () => setSelectedImage(null);
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
@@ -72,26 +71,6 @@ const ProductImages: React.FC = () => {
           ))
         )}
       </div>
-
-      {/* Popup hiển thị chi tiết ảnh */}
-      {/* {selectedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-4 max-w-[80%] max-h-[80%] overflow-auto">
-            <h2 className="text-lg font-semibold mb-2">{selectedImage.name}</h2>
-            <img
-              src={selectedImage.url}
-              alt={selectedImage.name}
-              className="max-w-full max-h-[70vh] rounded-lg object-contain"
-            />
-            <button
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-              onClick={handleClose}
-            >
-              Đóng
-            </button>
-          </div>
-        </div>
-      )} */}
     </div>
   );
 };

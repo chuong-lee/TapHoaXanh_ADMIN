@@ -14,11 +14,7 @@ export default function Product() {
             desc="Thêm hình ảnh"
             hrefLink="/add-images"
           >
-            <ProductImages
-              column1="Hình"
-              column2="Tên sản phẩm"
-              column4="Hành động"
-            />
+            <ProductImages />
           </ComponentCard>
         </div>
       </div>
