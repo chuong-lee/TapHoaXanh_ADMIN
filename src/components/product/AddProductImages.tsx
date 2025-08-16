@@ -70,11 +70,9 @@ export default function AddImages() {
   };
 
   const handleSelectImages = async (files: File[]) => {
-    console.log("Selected files:", files);
     setSelectImage(files);
   };
 
-  console.log(1111, productImage);
 
   return (
     <ComponentCard title="">

@@ -41,7 +41,6 @@ export default function FormEditProductVariant() {
     const fetchCategories = async () => {
       try {
         const response = await api.get("/products");
-        console.log("🚀 ~ fetchCategories ~ response:", response);
         setProduct(response.data);
       } catch (error) {
         console.error("Lỗi khi lấy danh mục:", error);

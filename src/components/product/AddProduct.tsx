@@ -1,11 +1,13 @@
 "use client";
 
 import api from "@/app/lib/axios";
+import { showSuccessAndRedirect } from "@/app/utils/helper";
 import { Brand } from "@/interface/IBrand";
 import { Category } from "@/interface/ICategory";
 import { defaultProduct, Product } from "@/interface/IProduct";
 import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ComponentCard from "../common/ComponentCard";
 import DatePicker from "../form/date-picker";
@@ -14,9 +16,8 @@ import Input from "../form/input/InputField";
 import TextArea from "../form/input/TextArea";
 import Label from "../form/Label";
 import Select, { Option } from "../form/Select";
-import { showSuccessAndRedirect } from "@/app/utils/helper";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import Image from "next/image";
+import { handleAxiosError } from "@/interface/IError";
 
 export default function FormAddProduct() {
   const [product, setProduct] = useState<Product>(defaultProduct);
@@ -25,7 +26,11 @@ export default function FormAddProduct() {
   const [errors, setErrors] = useState<Partial<Record<keyof Product, string>>>(
     {}
   );
+
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+  const [selectFile, setSelectFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -38,21 +43,17 @@ export default function FormAddProduct() {
     let errorMsg = "";
 
     if (name === "weight_unit" && Number(value) < 0) {
-      console.log("weight_unit err");
       errorMsg = "Đơn vị khối lượng không được âm";
     }
 
     if (name === "barcode") {
       const barcodePattern = /^SP\d{4}$/; // SP + 4 chữ số
       if (!barcodePattern.test(value)) {
-        console.log("barcode err");
         errorMsg = "Barcode phải đúng định dạng SPxxxx (ví dụ: SP0001)";
       }
     }
 
     if (name === "quantity" && Number(value) < 0) {
-      console.log("quantity err");
-
       errorMsg = "Số lượng không được âm";
     }
 
@@ -75,6 +76,8 @@ export default function FormAddProduct() {
         errorMsg = "Giảm giá phải là số";
       } else if (numValue < 0) {
         errorMsg = "Giảm giá không được âm";
+      } else if (numValue > 100) {
+        errorMsg = "Giảm giá không được vượt quá 100%";
       }
     }
 
@@ -95,13 +98,13 @@ export default function FormAddProduct() {
       }
       return updated;
     });
+    setErrorMessage("")
   };
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await api.get("/categories");
-        console.log("🚀 ~ fetchCategories ~ response:", response);
         setCategories(response.data);
       } catch (error) {
         console.error("Lỗi khi lấy danh mục:", error);
@@ -149,31 +152,39 @@ export default function FormAddProduct() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const data = { ...product };
+
     try {
-      await api.post("/products", data);
+      const formData = new FormData();
+
+      // Append các field trong DTO
+      formData.append("name", product.name);
+      formData.append("price", String(product.price));
+      formData.append("discount", String(product.discount));
+      formData.append("slug", product.slug);
+      formData.append("barcode", product.barcode);
+      formData.append("expiry_date", product.expiry_date);
+      formData.append("origin", product.origin);
+      formData.append("weight_unit", String(product.weight_unit));
+      formData.append("description", product.description);
+      formData.append("quantity", String(product.quantity));
+      formData.append("categoryId", String(product.categoryId));
+      formData.append("brandId", String(product.brandId));
+      formData.append("purchase", String(product.purchase));
+
+      // Append file ảnh
+      if (selectFile) formData.append("images", selectFile);
+
+      await api.post("/products", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       setProduct(defaultProduct);
       setErrors({});
       showSuccessAndRedirect("Thêm sản phẩm thành công!", router, "/product");
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const messages = error.response?.data?.message;
-
-        const fieldErrors: { name?: string; slug?: string } = {};
-
-        if (Array.isArray(messages)) {
-          messages.forEach((msg) => {
-            if (msg.includes("Tên danh mục")) {
-              fieldErrors.name = msg;
-            } else if (msg.includes("Slug")) {
-              fieldErrors.slug = msg;
-            }
-          });
-        }
-
-        setErrors(fieldErrors);
-      }
+      handleAxiosError(error, setErrorMessage);
     }
   };
 
@@ -229,13 +240,10 @@ export default function FormAddProduct() {
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const imagePath = `/images/product/${file.name}`;
-      setProduct((prev) => ({
-        ...prev,
-        images: imagePath,
-      }));
+    if (event.target.files?.length) {
+      setSelectFile(event.target.files[0]);
+      const previewUrl = URL.createObjectURL(event.target.files[0]);
+      setPreview(previewUrl);
     }
   };
 
@@ -252,8 +260,10 @@ export default function FormAddProduct() {
               value={product.name}
               onChange={handleChange}
             />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            {(errors.name) && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.name}
+              </p>
             )}
           </div>
           <div>
@@ -265,8 +275,10 @@ export default function FormAddProduct() {
               value={product.barcode}
               onChange={handleChange}
             />
-            {errors.barcode && (
-              <p className="text-red-500 text-sm mt-1">{errors.barcode}</p>
+            {(errors.barcode || errorMessage) && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.barcode || errorMessage}
+              </p>
             )}
           </div>
           <div>
@@ -386,6 +398,15 @@ export default function FormAddProduct() {
           <div>
             <Label>Hình ảnh</Label>
             <FileInput onChange={handleFileChange} className="custom-class" />
+            {preview && (
+              <Image
+                width={500}
+                height={500}
+                src={preview}
+                alt={product.name || "product image"}
+                className="mt-5"
+              />
+            )}
           </div>
         </div>
 

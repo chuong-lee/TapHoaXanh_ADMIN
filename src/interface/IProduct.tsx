@@ -8,7 +8,7 @@ export interface Product {
   barcode: string;
   expiry_date: string; // hoặc Date nếu bạn dùng Date object
   origin: string;
-  weight_unit: string;
+  weight_unit: number;
   description: string;
   quantity: number;
   categoryId: number;
@@ -46,7 +46,7 @@ export const defaultProduct: Product = {
   barcode: "",
   expiry_date: "",
   origin: "",
-  weight_unit: "",
+  weight_unit: 0,
   description: "",
   quantity: 0,
   categoryId: 0,

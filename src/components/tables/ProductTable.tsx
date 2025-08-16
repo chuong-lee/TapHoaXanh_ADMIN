@@ -1,5 +1,13 @@
 "use client";
+import api from "@/app/lib/axios";
+import { Product } from "@/interface/IProduct";
+import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { ProductButtonDelete } from "../modal/ModalProduct";
+import { PaginationPage } from "../pagination/Pagination";
+import Badge, { BadgeColor } from "../ui/badge/Badge";
 import {
   Table,
   TableBody,
@@ -7,12 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import api from "@/app/lib/axios";
-import Image from "next/image";
-import Link from "next/link";
-import { PaginationPage } from "../pagination/Pagination";
-import Badge, { BadgeColor } from "../ui/badge/Badge";
-import { Product } from "@/interface/IProduct";
+import { Button } from "../ui/button";
 
 interface TitleHeaderProps {
   category?: string;
@@ -24,6 +27,7 @@ const columns = [
   "Tên sản phẩm",
   "Mã sản phẩm",
   "Giá sản phẩm",
+  "Giá giảm",
   "Số lượng sản phẩm",
   "trạng thái",
   "Hành động",
@@ -49,7 +53,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(2);
+  const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   useEffect(() => {
     const getAllProducts = async () => {
@@ -69,7 +73,9 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
     getAllProducts();
   }, [page, limit, category, brand, search]);
 
-  const handleCheckStatusProduct = (expiry: string | Date): Status => {
+  const handleCheckStatusProduct = (
+    expiry: string | Date
+  ): { status: Status; message?: string } => {
     const date = typeof expiry === "string" ? new Date(expiry) : expiry;
     const now = new Date();
 
@@ -79,24 +85,41 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
     // Chuyển sang số ngày
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
+    let status: Status;
+    let message: string;
     if (diffDays < 0) {
-      return Status.EXPIRED;
-    } else if (diffDays <= 45) {
-      return Status.ALMOST_EXPIRED;
+      status = Status.EXPIRED;
+      message = "Hết hạn";
     } else {
-      return Status.VALID;
+      status = diffDays <= 7 ? Status.ALMOST_EXPIRED : Status.VALID;
+      message = `Còn ${diffDays} ngày`;
     }
+
+    return { status, message };
   };
 
-  const handleDeleteProduct = (id: number | undefined, name:string ,  e: React.FormEvent) => {
+  const handleDeleteProduct = (
+    id: number | undefined,
+    name: string,
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
     try {
       if (!id) return;
       api.delete(`/products/${id}`);
       setAllProducts((prev) => prev.filter((item) => item.id !== id));
+      toast.success(`Xóa sản phẩm ${name} thành công`);
     } catch (error) {
       console.log("Xảy ra lỗi", error);
     }
+  };
+
+  function formatNumberWithComma(num: number): string {
+    return num.toLocaleString("en-US"); // hoặc "vi-VN" nếu muốn dùng dấu chấm cho VN
+  }
+  const handleDiscount = (price: number, discount: number) => {
+    const discountAmount = (price * discount) / 100;
+    return parseFloat((price - discountAmount).toFixed(2));
   };
   return (
     <>
@@ -141,6 +164,13 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                 ) : (
                   allProducts.map((item) => {
                     const status = handleCheckStatusProduct(item.expiry_date);
+                    const discountPrice = handleDiscount(
+                      item.price,
+                      item.discount
+                    );
+
+                    const formatPrice = formatNumberWithComma(item.price);
+                    const formatQuantity = formatNumberWithComma(item.quantity);
                     return (
                       <TableRow key={item.id}>
                         <TableCell className="px-5 py-4 text-start">
@@ -149,7 +179,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                               <Image
                                 width={40}
                                 height={40}
-                                src={"/images/product/product-05.jpg"}
+                                src={`http://localhost:5000${item.images}`}
                                 alt={item.name}
                               />
                             </div>
@@ -164,14 +194,20 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                           {item.barcode}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
-                          {item.price}
+                          {formatPrice}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
-                          {item.quantity}
+                          {discountPrice}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
-                          <Badge variant="solid" color={statusColors[status]}>
-                            {status}
+                          {formatQuantity}
+                        </TableCell>
+                        <TableCell className="px-5 py-4 text-start">
+                          <Badge
+                            variant="solid"
+                            color={statusColors[status.status]}
+                          >
+                            {status.message}
                           </Badge>
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
@@ -182,14 +218,12 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                             >
                               Sửa
                             </Link>
-                            <button
-                              className="px-3 py-3 bg-red-500 text-white rounded-xl"
-                              onClick={(e) =>
-                                handleDeleteProduct(item.id, item.name, e)
-                              }
-                            >
-                              Xoá
-                            </button>
+                            {item.id && (
+                              <ProductButtonDelete
+                                productId={item.id}
+                                productName={item.name}
+                              />
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>

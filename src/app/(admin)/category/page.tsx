@@ -49,7 +49,7 @@ export default function CategoryPage() {
             onSubmit={handleSubmitSearch}
           >
             <CategoryTable
-              parentId={Number(selectedCategoryId)}
+              parentId={selectedCategoryId}
               search={searchTerm}
               column1="Tên danh mục"
               column2="Danh mục cha"

@@ -12,9 +12,10 @@ import {
   TableRow,
 } from "../ui/table";
 import { PaginationPage } from "../pagination/Pagination";
+import { CategoryButtonDelete } from "../modal/ModalCategory";
 
 interface TitleHeaderProps {
-  parentId?: number;
+  parentId?: string;
   search?: string;
   column1?: string;
   column2?: string;
@@ -47,7 +48,7 @@ const CategoryTable: React.FC<TitleHeaderProps> = ({
     const getAllProducts = async () => {
       try {
         const response = await api.get("/categories/search", {
-          params: { page, limit, parentId , search},
+          params: { page, limit, parentId, search },
         });
 
         setAllCategories(response.data.data);
@@ -60,17 +61,6 @@ const CategoryTable: React.FC<TitleHeaderProps> = ({
 
     getAllProducts();
   }, [page, limit, parentId, search]);
-
-  const handleDelete = (id: number | undefined, e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      if (!id) return;
-      api.delete(`/categories/${id}`);
-      alert("Xóa thành công");
-    } catch (error) {
-      console.error("Xóa bị lỗi", error);
-    }
-  };
 
   return (
     <>
@@ -170,13 +160,10 @@ const CategoryTable: React.FC<TitleHeaderProps> = ({
                           >
                             Sửa
                           </Link>
-
-                          <button
-                            className="px-3 py-3 bg-red-500 text-white rounded-xl"
-                            onClick={(e) => handleDelete(item.child_id, e)}
-                          >
-                            Xoá
-                          </button>
+                          <CategoryButtonDelete
+                            id={item.child_id!}
+                            name={item.child_name!}
+                          />
                         </div>
                       </TableCell>
                     </TableRow>

@@ -14,7 +14,6 @@ const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
   const [listImages, setListImages] = useState<File[]>([]);
   const onDrop = (acceptedFiles: File[]) => {
     const newList = [...listImages, ...acceptedFiles];
-    console.log("Files dropped:", acceptedFiles);
     // Handle file uploads here
     setListImages(newList);
     if (onChangeImages) {
