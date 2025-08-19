@@ -1,10 +1,5 @@
 import { AxiosError } from "axios";
 
-interface BackendErrors<T> {
-  message?: string;
-  errors?: Partial<Record<keyof T, string>>;
-}
-
 export interface BackendError {
   statusCode: number;
   error: string;

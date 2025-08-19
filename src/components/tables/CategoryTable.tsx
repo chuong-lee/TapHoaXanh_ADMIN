@@ -17,25 +17,11 @@ import { CategoryButtonDelete } from "../modal/ModalCategory";
 interface TitleHeaderProps {
   parentId?: string;
   search?: string;
-  column1?: string;
-  column2?: string;
-  column3?: string;
-  column4?: string;
-  column5?: string;
 }
 
-const CategoryTable: React.FC<TitleHeaderProps> = ({
-  parentId,
-  search,
-  column1,
-  column2,
-  column3,
-  column4,
-  column5,
-}) => {
-  // const { data: allCategories, loading } = useFetch<{
-  //   data: CategoryWithChildren[];
-  // }>("/categories/search");
+const menuCategories = ["Tên danh mục", "Thư mục cha", "Hành đồng"];
+
+const CategoryTable: React.FC<TitleHeaderProps> = ({ parentId, search }) => {
   const [allCategories, setAllCategories] = useState<CategoryWithChildren[]>(
     []
   );
@@ -71,46 +57,15 @@ const CategoryTable: React.FC<TitleHeaderProps> = ({
               {/* Table Header */}
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
-                  {column1 && (
+                  {menuCategories.map((item, index) => (
                     <TableCell
                       isHeader
                       className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
+                      key={index}
                     >
-                      {column1}
+                      {item}
                     </TableCell>
-                  )}
-                  {column2 && (
-                    <TableCell
-                      isHeader
-                      className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
-                    >
-                      {column2}
-                    </TableCell>
-                  )}
-                  {column3 && (
-                    <TableCell
-                      isHeader
-                      className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
-                    >
-                      {column3}
-                    </TableCell>
-                  )}
-                  {column4 && (
-                    <TableCell
-                      isHeader
-                      className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
-                    >
-                      {column4}
-                    </TableCell>
-                  )}
-                  {column5 && (
-                    <TableCell
-                      isHeader
-                      className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
-                    >
-                      {column5}
-                    </TableCell>
-                  )}
+                  ))}
                 </TableRow>
               </TableHeader>
 

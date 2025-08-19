@@ -30,6 +30,16 @@ const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
       "image/svg+xml": [],
     },
   });
+
+  const handleRemoveImage = (index: number) => {
+    const newList = listImages.filter((_, i) => i !== index);
+    setListImages(newList);
+
+    if (onChangeImages) {
+      onChangeImages(newList);
+    }
+  };
+
   return (
     <ComponentCard title="Thêm hình ảnh sản phẩm">
       <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-brand-500 dark:border-gray-700 rounded-xl hover:border-brand-500">
@@ -87,7 +97,7 @@ const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
         {listImages.map((item, index) => (
           <div
             key={index}
-            className="flex items-center justify-center w-[200px] h[200px]"
+            className="flex items-center justify-center w-[200px] h[200px] relative"
           >
             <Image
               width={200}
@@ -96,6 +106,12 @@ const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
               alt={item.name}
               className="rounded-md w-full h-full object-cover"
             />
+            <button
+              onClick={() => handleRemoveImage(index)}
+              className="absolute top-2 right-2 bg-red-500 text-white rounded-full px-2 py-1 text-xs"
+            >
+              X
+            </button>
           </div>
         ))}
       </div>

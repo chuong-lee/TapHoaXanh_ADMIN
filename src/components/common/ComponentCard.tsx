@@ -77,7 +77,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
               <Input
                 type="text"
                 placeholder="Tìm kiếm..."
-                className="w-full xl:w-48"
+                className="w-full xl:w-[500px]"
                 value={search.value}
                 onChange={(e) => search.onChange(e.target.value)}
               />

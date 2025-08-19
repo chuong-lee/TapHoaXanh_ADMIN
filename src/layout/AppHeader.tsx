@@ -1,4 +1,5 @@
 "use client";
+import UserDropdown from "@/components/header/UserDropdown";
 import { useSidebar } from "@/context/SidebarContext";
 import Image from "next/image";
 import Link from "next/link";
@@ -145,6 +146,14 @@ const AppHeader: React.FC = () => {
               </div>
             </form>
           </div>
+        </div>
+        <div
+          className={`${
+            isApplicationMenuOpen ? "flex" : "hidden"
+          } items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}
+        >
+          {/* <!-- User Area --> */}
+          <UserDropdown />
         </div>
       </div>
     </header>

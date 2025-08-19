@@ -76,7 +76,7 @@ export default function FormAddProductVariant() {
   return (
     <ComponentCard title="Thêm biến thể sản phẩm">
       <form onSubmit={handleSubmit}>
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
           <div>
             <Label>Tên sản phẩm biến thể</Label>
             <Input
@@ -117,7 +117,7 @@ export default function FormAddProductVariant() {
                 options={listProducts}
                 placeholder="Vui lòng chọn loại sản phẩm"
                 onChange={handleSelectProduct}
-                className="dark:bg-dark-900"
+                className="dark:bg-dark-900 w-full"
               />
               <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400"></span>
             </div>

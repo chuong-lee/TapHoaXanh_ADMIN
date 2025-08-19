@@ -100,7 +100,7 @@ export default function FormEditProduct() {
       return updated;
     });
 
-    setErrorMessage("")
+    setErrorMessage("");
   };
 
   useEffect(() => {
@@ -274,9 +274,9 @@ export default function FormEditProduct() {
   };
 
   return (
-    <ComponentCard title="Thêm sản phẩm">
+    <ComponentCard title="">
       <form onSubmit={handleSubmit}>
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
           <div>
             <Label>Tên sản phẩm</Label>
             <Input
@@ -375,18 +375,7 @@ export default function FormEditProduct() {
               <p className="text-red-500 text-sm mt-1">{errors.price}</p>
             )}
           </div>
-          <div>
-            <Label>Giảm giá ( theo đơn vị % )</Label>
-            <Input
-              type="text"
-              value={product.discount}
-              name="discount"
-              onChange={handleChange}
-            />
-            {errors.discount && (
-              <p className="text-red-500 text-sm mt-1">{errors.discount}</p>
-            )}
-          </div>
+
           <div>
             <Label>Loại danh mục</Label>
             <div className="relative">
@@ -395,7 +384,7 @@ export default function FormEditProduct() {
                 placeholder="Vui lòng chọn loại danh mục"
                 onChange={handleSelectCategory}
                 defaultValue={product?.categoryId.toString()}
-                className="dark:bg-dark-900"
+                className="dark:bg-dark-900 w-full"
               />
 
               <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400"></span>
@@ -408,13 +397,25 @@ export default function FormEditProduct() {
                 options={listBrands}
                 placeholder="Vui lòng chọn nhãn hàng"
                 onChange={handleSelectBrand}
-                className="dark:bg-dark-900"
+                className="dark:bg-dark-900 w-full"
                 defaultValue={product?.brandId.toString()}
               />
               <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400"></span>
             </div>
           </div>
-          <div>
+          <div className="col-span-2">
+            <Label>Giảm giá ( theo đơn vị % )</Label>
+            <Input
+              type="text"
+              value={product.discount}
+              name="discount"
+              onChange={handleChange}
+            />
+            {errors.discount && (
+              <p className="text-red-500 text-sm mt-1">{errors.discount}</p>
+            )}
+          </div>
+          <div className="col-span-2">
             <Label>Mô tả</Label>
             <TextArea
               value={product.description}
@@ -422,7 +423,7 @@ export default function FormEditProduct() {
               rows={6}
             />
           </div>
-          <div>
+          <div className="col-span-2">
             <Label>Hình ảnh</Label>
             <FileInput onChange={handleFileChange} className="custom-class" />
             <Image

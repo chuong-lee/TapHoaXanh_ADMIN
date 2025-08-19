@@ -62,10 +62,6 @@ export default function ProductPage() {
             <ProductVariants
               productId={selectedProductId}
               searchItem={searchTerm}
-              column1="Tên sản phẩm biến thể"
-              column2="Giá sản phẩm"
-              column3="Số lượng sản phẩm"
-              column4="Hành động"
             />
           </ComponentCard>
         </div>

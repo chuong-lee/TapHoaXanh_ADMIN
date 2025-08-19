@@ -46,7 +46,6 @@ const Select: React.FC<SelectProps> = ({
       {/* Placeholder option */}
       <option
         value=""
-        disabled
         className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
       >
         {placeholder}

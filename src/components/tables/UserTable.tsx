@@ -1,6 +1,6 @@
 "use client";
 import api from "@/app/lib/axios";
-import { Product, ProductVariant } from "@/interface/IProduct";
+import { User } from "@/interface/IUser";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -14,37 +14,27 @@ import {
 } from "../ui/table";
 
 interface TitleHeaderProps {
-  productId?: string; // Optional productId for filtering variants
+  filterRole?: string;
   searchItem?: string; // Optional search term
 }
 
-const ProductVariants: React.FC<TitleHeaderProps> = ({
-  productId,
-  searchItem,
-}) => {
-  const [allProductVariant, setAllProductVariant] = useState<ProductVariant[]>(
-    []
-  );
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+const UserTable: React.FC<TitleHeaderProps> = ({ searchItem, filterRole }) => {
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [allProducts, setAllProducts] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10); // số sản phẩm mỗi trang
   const [totalPages, setTotalPages] = useState(1);
 
-  const productVariantFields = [
-    "Tên sản phẩm biến thể",
-    "Giá sản phẩm",
-    "Số lượng sản phẩm",
-    "Hành động",
-  ];
+  const productVariantFields = ["Tên người dùng", "Email", "SĐT", "Hành động"];
 
   useEffect(() => {
     const getAllProducts = async () => {
       try {
-        const response = await api.get("/product-variant/search", {
-          params: { page, limit, product: productId, search: searchItem },
+        const response = await api.get("users/search", {
+          params: { page, limit, search: searchItem, role: filterRole },
         });
-        setAllProductVariant(response.data.data);
+        setAllUsers(response.data.data);
         setTotalPages(response.data.meta.lastPage);
         setLoading(false);
       } catch (error) {
@@ -53,7 +43,7 @@ const ProductVariants: React.FC<TitleHeaderProps> = ({
     };
 
     getAllProducts();
-  }, [page, limit, productId, searchItem]);
+  }, [page, limit, searchItem, filterRole]);
 
   const handleDeleteProduct = (
     id: number | undefined,
@@ -101,7 +91,7 @@ const ProductVariants: React.FC<TitleHeaderProps> = ({
                       Đang tải sản phẩm...
                     </TableCell>
                   </TableRow>
-                ) : allProductVariant.length === 0 ? (
+                ) : allUsers.length === 0 ? (
                   <TableRow>
                     <TableCell
                       className="text-center py-4 text-gray-500"
@@ -111,7 +101,7 @@ const ProductVariants: React.FC<TitleHeaderProps> = ({
                     </TableCell>
                   </TableRow>
                 ) : (
-                  allProductVariant.map((item) => (
+                  allUsers.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell className="px-5 py-4 text-start">
                         <div className="flex items-center gap-3">
@@ -120,38 +110,30 @@ const ProductVariants: React.FC<TitleHeaderProps> = ({
                               width={40}
                               height={40}
                               src={"/images/product/product-05.jpg"}
-                              alt={item.variant_name}
+                              alt={item.name}
                             />
                           </div>
                           <div>
                             <span className="block font-medium">
-                              {item.variant_name}
+                              {item.name}
                             </span>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
-                        {item.price_modifier}
+                        {item.email}
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
-                        {item.stock}
+                        {item.phone}
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
                         <div className="flex items-center gap-3">
                           <Link
                             className="px-3 py-3 bg-blue-500 text-white rounded-xl"
-                            href={`/edit-product-variant/${item.id}`}
+                            href={`/edit-user/${item.id}`}
                           >
                             Sửa
                           </Link>
-                          <button
-                            className="px-3 py-3 bg-red-500 text-white rounded-xl"
-                            onClick={(e) =>
-                              handleDeleteProduct(item.id, item.variant_name, e)
-                            }
-                          >
-                            Xoá
-                          </button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -174,4 +156,4 @@ const ProductVariants: React.FC<TitleHeaderProps> = ({
   );
 };
 
-export default ProductVariants;
+export default UserTable;

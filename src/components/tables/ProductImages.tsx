@@ -3,14 +3,17 @@ import api from "@/app/lib/axios";
 import { GetProductImages } from "@/interface/IProduct";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { ModalProductImages } from "../modal/ModalProductImages";
 
 const ProductImages: React.FC = () => {
   const [allProducts, setAllProducts] = useState<GetProductImages[]>([]);
   const [selectedImage, setSelectedImage] = useState<{
+    id: number;
     url: string;
     name: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const getAllProducts = async () => {
@@ -42,11 +45,21 @@ const ProductImages: React.FC = () => {
     }
   };
 
-  const handleShowImageInfo = (e: React.MouseEvent<HTMLImageElement>) => {
+  const handleShowImageInfo = (
+    item: GetProductImages,
+    e: React.MouseEvent<HTMLImageElement>
+  ) => {
     e.preventDefault();
-    const imageUrl = e.currentTarget.src;
-    const imageName = e.currentTarget.alt;
-    setSelectedImage({ url: imageUrl, name: imageName });
+    setSelectedImage({
+      id: item.id!,
+      url: `http://localhost:5000${item.image_url}`,
+      name: item.name!,
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -65,10 +78,19 @@ const ProductImages: React.FC = () => {
                 src={`http://localhost:5000${item.image_url}`}
                 alt={item.name}
                 className="w-full h-full border border-gray-200 rounded-xl dark:border-gray-800"
-                onClick={handleShowImageInfo}
+                onClick={(e) => handleShowImageInfo(item, e)}
               />
             </div>
           ))
+        )}
+        {selectedImage && isModalOpen && (
+          <ModalProductImages
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            imageId={selectedImage?.id}
+            imageName={selectedImage?.name}
+            imageUrl={selectedImage?.url}
+          />
         )}
       </div>
     </div>

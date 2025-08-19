@@ -48,13 +48,7 @@ export default function CategoryPage() {
             }}
             onSubmit={handleSubmitSearch}
           >
-            <CategoryTable
-              parentId={selectedCategoryId}
-              search={searchTerm}
-              column1="Tên danh mục"
-              column2="Danh mục cha"
-              column3="Hành động"
-            />
+            <CategoryTable parentId={selectedCategoryId} search={searchTerm} />
           </ComponentCard>
         </div>
       </div>
