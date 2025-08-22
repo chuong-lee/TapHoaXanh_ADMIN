@@ -2,11 +2,10 @@
 
 import api from "@/app/lib/axios";
 import { showSuccessAndRedirect } from "@/app/utils/helper";
-import { handleAxiosError } from "@/interface/IError";
 import { defaultUser, TUserRole, User } from "@/interface/IUser";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import ComponentCard from "../common/ComponentCard";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
@@ -14,10 +13,7 @@ import Select, { Option } from "../form/Select";
 
 export default function FormAddUser() {
   const [user, setUser] = useState<User>(defaultUser);
-  const params = useParams();
-  const id = params.id;
   const router = useRouter();
-  const [error, setErrorMessage] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -48,7 +44,7 @@ export default function FormAddUser() {
         "/profile"
       );
     } catch (error) {
-      handleAxiosError(error, setErrorMessage);
+      console.log("Lỗi: ", error);
     }
   };
 

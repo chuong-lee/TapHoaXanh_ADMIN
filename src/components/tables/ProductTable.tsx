@@ -4,7 +4,6 @@ import { Product } from "@/interface/IProduct";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { ProductButtonDelete } from "../modal/ModalProduct";
 import { PaginationPage } from "../pagination/Pagination";
 import Badge, { BadgeColor } from "../ui/badge/Badge";
@@ -15,7 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { Button } from "../ui/button";
 
 interface TitleHeaderProps {
   category?: string;
@@ -53,7 +51,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   useEffect(() => {
     const getAllProducts = async () => {
@@ -96,22 +94,6 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
     }
 
     return { status, message };
-  };
-
-  const handleDeleteProduct = (
-    id: number | undefined,
-    name: string,
-    e: React.FormEvent
-  ) => {
-    e.preventDefault();
-    try {
-      if (!id) return;
-      api.delete(`/products/${id}`);
-      setAllProducts((prev) => prev.filter((item) => item.id !== id));
-      toast.success(`Xóa sản phẩm ${name} thành công`);
-    } catch (error) {
-      console.log("Xảy ra lỗi", error);
-    }
   };
 
   function formatNumberWithComma(num: number): string {

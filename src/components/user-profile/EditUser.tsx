@@ -2,9 +2,7 @@
 
 import api from "@/app/lib/axios";
 import { showSuccessAndRedirect } from "@/app/utils/helper";
-import { defaultProductVariant, Product } from "@/interface/IProduct";
 import { defaultUser, TUserRole, User } from "@/interface/IUser";
-import axios from "axios";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,14 +10,12 @@ import ComponentCard from "../common/ComponentCard";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import Select, { Option } from "../form/Select";
-import { handleAxiosError } from "@/interface/IError";
 
 export default function FormEditUser() {
   const [user, setUser] = useState<User>(defaultUser);
   const params = useParams();
   const id = params.id;
   const router = useRouter();
-  const [error, setErrorMessage] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -51,7 +47,7 @@ export default function FormEditUser() {
     };
 
     fetchCategory();
-  }, []);
+  }, [id]);
 
   const productOptions: Option[] = [
     { value: TUserRole.ADMIN, label: TUserRole.ADMIN },
@@ -70,7 +66,7 @@ export default function FormEditUser() {
         "/profile"
       );
     } catch (error) {
-      handleAxiosError(error, setErrorMessage);
+      console.log("Lỗi: ", error);
     }
   };
 

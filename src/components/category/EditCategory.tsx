@@ -52,7 +52,6 @@ export default function FormEditCategory() {
       try {
         const response = await api.get(`/categories/${id}`);
         const data = response.data;
-        console.log("🚀 ~ fetchCategory ~ data:", data);
 
         setCategory(data.name || "");
         setSlug(data.slug || "");
@@ -63,7 +62,7 @@ export default function FormEditCategory() {
     };
 
     fetchCategory();
-  }, []);
+  }, [id]);
 
   const options: Option[] = categories
     .filter((cat) => typeof cat.id === "number")

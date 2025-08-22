@@ -29,22 +29,6 @@ const ProductImages: React.FC = () => {
     getAllProducts();
   }, []);
 
-  const handleDeleteProduct = (
-    id: number | undefined,
-    name: string,
-    e: React.FormEvent
-  ) => {
-    e.preventDefault();
-    try {
-      if (!id) return;
-      api.delete(`/product-images/${id}`);
-      alert(`Sản phẩm ${name} đã được xóa thành công`);
-      setAllProducts((prev) => prev.filter((item) => item.id !== id));
-    } catch (error) {
-      console.log("Xảy ra lỗi", error);
-    }
-  };
-
   const handleShowImageInfo = (
     item: GetProductImages,
     e: React.MouseEvent<HTMLImageElement>

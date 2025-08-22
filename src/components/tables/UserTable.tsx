@@ -20,10 +20,9 @@ interface TitleHeaderProps {
 
 const UserTable: React.FC<TitleHeaderProps> = ({ searchItem, filterRole }) => {
   const [allUsers, setAllUsers] = useState<User[]>([]);
-  const [allProducts, setAllProducts] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10); // số sản phẩm mỗi trang
+  const [limit] = useState(10); // số sản phẩm mỗi trang
   const [totalPages, setTotalPages] = useState(1);
 
   const productVariantFields = ["Tên người dùng", "Email", "SĐT", "Hành động"];
@@ -45,21 +44,6 @@ const UserTable: React.FC<TitleHeaderProps> = ({ searchItem, filterRole }) => {
     getAllProducts();
   }, [page, limit, searchItem, filterRole]);
 
-  const handleDeleteProduct = (
-    id: number | undefined,
-    name: string,
-    e: React.FormEvent
-  ) => {
-    e.preventDefault();
-    try {
-      if (!id) return;
-      api.delete(`/product-variant/${id}`);
-      alert(`Sản phẩm ${name} đã được xóa thành công`);
-      setAllProducts((prev) => prev.filter((item) => item.id !== id));
-    } catch (error) {
-      console.log("Xảy ra lỗi", error);
-    }
-  };
   return (
     <>
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">

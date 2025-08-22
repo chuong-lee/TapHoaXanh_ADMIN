@@ -67,7 +67,7 @@ export default function FormEditProductVariant() {
     };
 
     fetchCategory();
-  }, []);
+  }, [id]);
 
   const listProducts: Option[] = product
     .filter((cate) => typeof cate.id === "number")
@@ -75,16 +75,6 @@ export default function FormEditProductVariant() {
       value: cate.id!.toString(),
       label: cate.name ?? "",
     }));
-
-  const slugify = (text: string): string => {
-    return text
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9\-]/g, "");
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

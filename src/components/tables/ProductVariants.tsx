@@ -1,6 +1,6 @@
 "use client";
 import api from "@/app/lib/axios";
-import { Product, ProductVariant } from "@/interface/IProduct";
+import { ProductVariant } from "@/interface/IProduct";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -25,10 +25,9 @@ const ProductVariants: React.FC<TitleHeaderProps> = ({
   const [allProductVariant, setAllProductVariant] = useState<ProductVariant[]>(
     []
   );
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10); // số sản phẩm mỗi trang
+  const [limit] = useState(10); // số sản phẩm mỗi trang
   const [totalPages, setTotalPages] = useState(1);
 
   const productVariantFields = [
@@ -64,8 +63,6 @@ const ProductVariants: React.FC<TitleHeaderProps> = ({
     try {
       if (!id) return;
       api.delete(`/product-variant/${id}`);
-      alert(`Sản phẩm ${name} đã được xóa thành công`);
-      setAllProducts((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.log("Xảy ra lỗi", error);
     }

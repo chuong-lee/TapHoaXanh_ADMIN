@@ -4,8 +4,9 @@ import api from "@/app/lib/axios";
 import { showSuccessAndRedirect } from "@/app/utils/helper";
 import { Brand } from "@/interface/IBrand";
 import { Category } from "@/interface/ICategory";
+import { handleAxiosError } from "@/interface/IError";
 import { defaultProduct, Product } from "@/interface/IProduct";
-import axios from "axios";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -16,8 +17,6 @@ import Input from "../form/input/InputField";
 import TextArea from "../form/input/TextArea";
 import Label from "../form/Label";
 import Select, { Option } from "../form/Select";
-import Image from "next/image";
-import { handleAxiosError } from "@/interface/IError";
 
 export default function FormAddProduct() {
   const [product, setProduct] = useState<Product>(defaultProduct);

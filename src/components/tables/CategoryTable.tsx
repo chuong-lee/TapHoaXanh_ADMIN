@@ -1,9 +1,10 @@
 "use client";
 import api from "@/app/lib/axios";
-import useFetch from "@/hook/useFetch";
 import { CategoryWithChildren } from "@/interface/ICategory";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { CategoryButtonDelete } from "../modal/ModalCategory";
+import { PaginationPage } from "../pagination/Pagination";
 import {
   Table,
   TableBody,
@@ -11,8 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { PaginationPage } from "../pagination/Pagination";
-import { CategoryButtonDelete } from "../modal/ModalCategory";
 
 interface TitleHeaderProps {
   parentId?: string;
@@ -26,7 +25,7 @@ const CategoryTable: React.FC<TitleHeaderProps> = ({ parentId, search }) => {
     []
   );
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(3);
+  const [limit] = useState(3);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 

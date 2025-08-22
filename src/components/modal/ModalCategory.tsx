@@ -1,7 +1,6 @@
 import {
   deleteCategory,
   deleteProductByCategoryId,
-  deleteProductById,
   deleteProductImagesByProductId,
   deleteProductVariantByProductId,
 } from "@/app/lib/api/delete.api";
@@ -37,17 +36,13 @@ export function CategoryButtonDelete({ id, name }: CategoryButtonDeleteProps) {
           try {
             await deleteProductVariantByProductId(item.id!);
           } catch (err) {
-            console.warn(
-              `❌ Không tìm thấy biến thể cho sản phẩm ${item.id}, bỏ qua.`
-            );
+            console.log("Lỗi: ", err);
           }
 
           try {
             await deleteProductImagesByProductId(item.id!);
           } catch (err) {
-            console.warn(
-              `❌ Không tìm thấy ảnh cho sản phẩm ${item.id}, bỏ qua.`
-            );
+            console.log("Lỗi: ", err);
           }
         }
       }

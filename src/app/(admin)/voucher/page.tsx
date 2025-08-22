@@ -2,7 +2,7 @@
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { Option } from "@/components/form/Select";
-import OrderTable, { StatusOrder } from "@/components/tables/OrderTable";
+import { StatusOrder } from "@/components/tables/OrderTable";
 import VoucherTable from "@/components/tables/VoucherTable";
 import { useState } from "react";
 

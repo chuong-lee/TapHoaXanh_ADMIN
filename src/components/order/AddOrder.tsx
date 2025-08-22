@@ -8,7 +8,6 @@ import {
   PaymentMethod,
   PaymentStatus,
 } from "@/interface/IOrder";
-import { listProduct } from "@/interface/IProduct";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -19,7 +18,6 @@ import Select, { Option } from "../form/Select";
 
 export default function FormAddOrder() {
   const [productVariant, setProductVariant] = useState<Order>(defaultOrder);
-  const [products, setProducts] = useState(listProduct);
   const router = useRouter();
 
   const handleChange = (

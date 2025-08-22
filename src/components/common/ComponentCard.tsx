@@ -45,7 +45,9 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onSubmit && onSubmit();
+          if (onSubmit) {
+            onSubmit();
+          }
         }}
         className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 px-6 py-5"
       >
