@@ -326,18 +326,6 @@ export default function FormAddProduct() {
             />
           </div>
           <div>
-            <Label>Số lượng</Label>
-            <Input
-              type="text"
-              value={product.quantity}
-              name="quantity"
-              onChange={handleChange}
-            />
-            {errors.quantity && (
-              <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>
-            )}
-          </div>
-          <div>
             <Label>Giá sản phẩm</Label>
             <Input
               type="text"

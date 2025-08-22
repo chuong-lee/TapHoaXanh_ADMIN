@@ -57,7 +57,7 @@ api.interceptors.response.use(
         isRefreshing = true;
         try {
           const res = await axios.post(
-            "http://localhost:5000/auth/refresh-token",
+            process.env.NEXT_PUBLIC_API_URL + "/api/auth/refresh-token",
             {
               refresh_token,
             }

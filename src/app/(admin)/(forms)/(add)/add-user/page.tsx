@@ -1,5 +1,5 @@
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import FormEditUser from "@/components/user-profile/EditUser";
+import FormAddUser from "@/components/user-profile/AddUser";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,13 +8,13 @@ export const metadata: Metadata = {
     "This is Next.js Form Elements page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
 };
 
-export default function EditUser() {
+export default function AddUser() {
   return (
     <div>
       <PageBreadcrumb pageTitle="Cập nhật thông tin người dùng" />
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-6">
-          <FormEditUser />
+          <FormAddUser />
         </div>
       </div>
     </div>

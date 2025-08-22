@@ -75,7 +75,7 @@ const ProductImages: React.FC = () => {
               <Image
                 width={338}
                 height={338}
-                src={`http://localhost:5000${item.image_url}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL} + ${item.image_url}`}
                 alt={item.name}
                 className="w-full h-full border border-gray-200 rounded-xl dark:border-gray-800"
                 onClick={(e) => handleShowImageInfo(item, e)}
