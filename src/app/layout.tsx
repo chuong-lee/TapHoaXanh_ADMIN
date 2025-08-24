@@ -1,6 +1,7 @@
 import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { SidebarProvider } from '@/context/SidebarContext';
+import { Toaster } from 'sonner';
 
 export default function RootLayout({
   children,
@@ -13,6 +14,8 @@ export default function RootLayout({
         <ThemeProvider>
           <SidebarProvider>{children}</SidebarProvider>
         </ThemeProvider>
+        <Toaster position="top-right" richColors theme="light" />
+
       </body>
     </html>
   );

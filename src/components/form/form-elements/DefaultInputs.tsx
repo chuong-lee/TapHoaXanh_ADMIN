@@ -1,13 +1,10 @@
 "use client";
-import React, { useState } from 'react';
 import ComponentCard from '../../common/ComponentCard';
-import Label from '../Label';
 import Input from '../input/InputField';
+import Label from '../Label';
 import Select from '../Select';
-import DatePicker from '@/components/form/date-picker';
 
 export default function DefaultInputs() {
-  const [showPassword, setShowPassword] = useState(false);
   const options = [
     { value: "marketing", label: "Marketing" },
     { value: "template", label: "Template" },

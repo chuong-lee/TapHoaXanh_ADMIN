@@ -1,9 +1,20 @@
 "use client";
-import React, { useEffect, useRef, useState,useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
+import {
+  AiOutlineAppstore,
+  AiOutlineDown,
+  AiOutlineSkin,
+} from "react-icons/ai";
+import {
+  FaCartPlus,
+  FaMoneyBillTransfer,
+  FaRegCalendarCheck,
+  FaRegCircleUser,
+} from "react-icons/fa6";
 // import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
@@ -15,34 +26,51 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    icon: '',
-    name: "Dashboard",
+    icon: <AiOutlineAppstore className="w-6 h-6" />,
+    name: "Thống kê",
     path: "/dashboard",
   },
   {
-    icon: '',
-    name: "Product",
-    path: "/product",
+    icon: <AiOutlineSkin className="w-6 h-6" />,
+    name: "Quản lý sản phẩm",
+
+    subItems: [
+      {
+        name: "Sản phẩm",
+        path: "/product",
+        pro: false,
+      },
+      {
+        name: "Sản phẩm biến thể",
+        path: "/product-variant",
+        pro: false,
+      },
+      {
+        name: "Hinh ảnh sản phẩm",
+        path: "/product-images",
+        pro: false,
+      },
+    ],
   },
   {
-    icon: '',
-    name: "User Profile",
+    icon: <FaRegCircleUser className="w-6 h-6" />,
+    name: "Quan lý người dùng",
     path: "/profile",
   },
 
   {
-    name: "Category",
-    icon: '',
+    icon: <FaRegCalendarCheck className="w-6 h-6" />,
+    name: "Quản lý danh mục",
     path: "/category",
   },
   {
-    name: "Voucher",
-    icon: '',
+    icon: <FaMoneyBillTransfer className="w-6 h-6" />,
+    name: "Quản lý voucher",
     path: "/voucher",
   },
   {
-    name: "Order",
-    icon: '',
+    icon: <FaCartPlus className="w-6 h-6" />,
+    name: "Quản lý đơn hàng",
     path: "/order",
   },
 ];
@@ -83,16 +111,16 @@ const AppSidebar: React.FC = () => {
               {(isExpanded || isHovered || isMobileOpen) && (
                 <span className={`menu-item-text`}>{nav.name}</span>
               )}
-              {/* {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform duration-200  ${
+              {(isExpanded || isHovered || isMobileOpen) && (
+                <AiOutlineDown
+                  className={`ml-auto w-3 h-3 transition-transform duration-200  ${
                     openSubmenu?.type === menuType &&
                     openSubmenu?.index === index
                       ? "rotate-180 text-brand-500"
                       : ""
                   }`}
                 />
-              )} */}
+              )}
             </button>
           ) : (
             nav.path && (
@@ -187,7 +215,7 @@ const AppSidebar: React.FC = () => {
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // const isActive = (path: string) => path === pathname;
-   const isActive = useCallback((path: string) => path === pathname, [pathname]);
+  const isActive = useCallback((path: string) => path === pathname, [pathname]);
 
   useEffect(() => {
     // Set the height of the submenu items when the submenu is opened
@@ -237,22 +265,16 @@ const AppSidebar: React.FC = () => {
       >
         <Link href="/">
           {isExpanded || isHovered || isMobileOpen ? (
-            <>
+            <div className="flex items-center gap-2">
               <Image
                 className="dark:hidden"
-                src="/images/logo/logo.svg"
+                src="/images/brand/brand-01.svg"
                 alt="Logo"
-                width={150}
-                height={40}
+                width={35}
+                height={35}
               />
-              <Image
-                className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-            </>
+              <span className="uppercase font-bold"> Tạp Hóa Xanh</span>
+            </div>
           ) : (
             <Image
               src="/images/logo/logo-icon.svg"
@@ -282,8 +304,6 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
-
-            
           </div>
         </nav>
         {/* {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null} */}
