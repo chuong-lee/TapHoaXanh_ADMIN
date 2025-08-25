@@ -152,7 +152,6 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                     );
 
                     const formatPrice = formatNumberWithComma(item.price);
-                    const formatQuantity = formatNumberWithComma(item.quantity);
                     return (
                       <TableRow key={item.id}>
                         <TableCell className="px-5 py-4 text-start">
@@ -161,7 +160,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                               <Image
                                 width={40}
                                 height={40}
-                                src={`http://localhost:5000${item.images}`}
+                                src={item.images}
                                 alt={item.name}
                               />
                             </div>
@@ -180,9 +179,6 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
                           {discountPrice}
-                        </TableCell>
-                        <TableCell className="px-5 py-4 text-start">
-                          {formatQuantity}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
                           <Badge

@@ -25,3 +25,11 @@ export const deleteProductByCategoryId = async (
 export const deleteCategory = async (categoryId: number | string) => {
   await safeDelete(`/categories/${categoryId}`);
 };
+
+export const deleteVoucher = async (voucherId: number | string) => {
+  await safeDelete(`/voucher/${voucherId}`);
+};
+
+export const deleteProductImage = async (id: number | string) => {
+  await safeDelete(`/product-images/${id}`);
+};

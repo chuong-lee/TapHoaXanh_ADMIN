@@ -23,6 +23,7 @@ const columns = [
   "SĐT",
   "Tổng giá",
   "Trạng thái",
+  "Hành động",
 ];
 
 export enum StatusOrder {

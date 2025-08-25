@@ -36,7 +36,7 @@ const ProductImages: React.FC = () => {
     e.preventDefault();
     setSelectedImage({
       id: item.id!,
-      url: `http://localhost:5000${item.image_url}`,
+      url: `${item.image_url}`,
       name: item.name!,
     });
     setIsModalOpen(true);
@@ -59,7 +59,7 @@ const ProductImages: React.FC = () => {
               <Image
                 width={338}
                 height={338}
-                src={`${process.env.NEXT_PUBLIC_API_URL} + ${item.image_url}`}
+                src={item.image_url}
                 alt={item.name}
                 className="w-full h-full border border-gray-200 rounded-xl dark:border-gray-800"
                 onClick={(e) => handleShowImageInfo(item, e)}

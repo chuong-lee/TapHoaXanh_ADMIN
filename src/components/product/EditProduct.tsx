@@ -323,6 +323,7 @@ export default function FormEditProduct() {
               label="Ngày hết hạn"
               placeholder="Select a date"
               onChange={handleSelectDate}
+              defaultDate={product.expiry_date}
             />
             {errors.expiry_date && (
               <p className="text-red-500 text-sm mt-1">{errors.expiry_date}</p>

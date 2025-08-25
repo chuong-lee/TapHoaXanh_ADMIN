@@ -1,3 +1,4 @@
+import { deleteProductImage } from "@/app/lib/api/delete.api";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -30,6 +31,9 @@ export function ModalProductImages({
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
+      await deleteProductImage(imageId);
+      toast.success(`Xóa hình ảnh ${imageName} thành công`);
+      onClose(false);
     } catch (error) {
       toast.error(`Lỗi khi xóa: ${error}`);
     }

@@ -20,6 +20,7 @@ export interface ProductVariant {
   variant_name: string;
   price_modifier: number;
   stock: number;
+  image_url: string;
   productId: number;
 }
 
@@ -59,4 +60,5 @@ export const defaultProductVariant: ProductVariant = {
   price_modifier: 0,
   stock: 0,
   productId: 0,
+  image_url: "",
 };

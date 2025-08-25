@@ -11,35 +11,47 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { Voucher } from "@/interface/IVoucher";
+import Link from "next/link";
+import { ProductButtonDelete } from "../modal/ModalProduct";
+import { VoucherButtonDelete } from "../modal/ModalVoucher";
 
 interface TitleHeaderProps {
   status?: string;
   search?: string;
+  start_date?: string;
+  end_date?: string;
 }
 
 const columns = [
   "Mã voucher",
   "Số lượng",
-  "Đã dùng",
   "Loại voucher",
   "Ngày bắt đầu",
   "Ngày kết thúc",
+  "Trạng thái voucher",
+  "Hành động",
 ];
 
-export enum StatusOrder {
-  SUCCESS = "Thành công",
-  ERROR = "Thất bại",
-  PENDING = "Đang xử lý",
+export enum StatusVoucher {
+  VALID = "Còn hạn",
+  ALMOST_EXPIRED = "Sắp hết hạn",
+  EXPIRED = "Hết hạn",
 }
 
-const statusColors: Record<StatusOrder, BadgeColor> = {
-  [StatusOrder.SUCCESS]: "success",
-  [StatusOrder.PENDING]: "warning",
-  [StatusOrder.ERROR]: "error",
+const statusColors: Record<StatusVoucher, BadgeColor> = {
+  [StatusVoucher.VALID]: "success",
+  [StatusVoucher.ALMOST_EXPIRED]: "warning",
+  [StatusVoucher.EXPIRED]: "error",
 };
 
-const VoucherTable: React.FC<TitleHeaderProps> = ({ status, search }) => {
-  const [allProducts, setAllProducts] = useState<OrderUser[]>([]);
+const VoucherTable: React.FC<TitleHeaderProps> = ({
+  status,
+  search,
+  start_date,
+  end_date,
+}) => {
+  const [allVouchers, setAllVouchers] = useState<Voucher[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
@@ -47,11 +59,11 @@ const VoucherTable: React.FC<TitleHeaderProps> = ({ status, search }) => {
   useEffect(() => {
     const getAllProducts = async () => {
       try {
-        const response = await api.get("/order/search", {
-          params: { page, limit, search, status },
+        const response = await api.get("/voucher/search", {
+          params: { page, limit, search, start_date, end_date },
         });
 
-        setAllProducts(response.data.data);
+        setAllVouchers(response.data.data);
         setTotalPages(response.data.meta.lastPage);
         setLoading(false);
       } catch (error) {
@@ -60,24 +72,39 @@ const VoucherTable: React.FC<TitleHeaderProps> = ({ status, search }) => {
     };
 
     getAllProducts();
-  }, [page, limit, search, status]);
+  }, [page, limit, search, status, start_date, end_date]);
 
-  const getColorStatus = (status: string): StatusOrder => {
-    switch (status) {
-      case "success":
-        return StatusOrder.SUCCESS;
-      case "pending":
-        return StatusOrder.PENDING;
-      case "error":
-        return StatusOrder.ERROR;
-      default:
-        return StatusOrder.PENDING; // fallback or choose appropriate default
+  const calculatorExpiredDate = (
+    startDate: string,
+    endDate: string
+  ): { status: StatusVoucher; message?: string } => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Tính số ngày chênh lệch
+    const diffTime = end.getTime() - start.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    let status: StatusVoucher;
+    let message: string;
+
+    if (diffDays < 0) {
+      status = StatusVoucher.EXPIRED;
+      message = "Hết hạn";
+    } else {
+      status =
+        diffDays <= 7 ? StatusVoucher.ALMOST_EXPIRED : StatusVoucher.VALID;
+      message = `Còn ${diffDays} ngày`;
     }
+
+    return { status, message };
   };
 
-  function formatNumberWithComma(num: number): string {
-    return num.toLocaleString("en-US"); // hoặc "vi-VN" nếu muốn dùng dấu chấm cho VN
-  }
+  const covertDate = (date: string) => {
+    const dateOnly = date.split("T")[0];
+    return dateOnly;
+  };
+
   return (
     <>
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -109,40 +136,63 @@ const VoucherTable: React.FC<TitleHeaderProps> = ({ status, search }) => {
                       Đang tải ...
                     </TableCell>
                   </TableRow>
-                ) : allProducts.length === 0 ? (
+                ) : allVouchers.length === 0 ? (
                   <TableRow>
                     <TableCell
                       className="text-center py-4 text-gray-500"
                       colSpan={5}
                     >
-                      Không có đơn hàng nào.
+                      Không có voucher nào.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  allProducts.map((item) => {
-                    const formatTotalPrice = formatNumberWithComma(
-                      item.totalPrice
+                  allVouchers.map((item) => {
+                    const statusVoucher = calculatorExpiredDate(
+                      item.start_date,
+                      item.end_date
                     );
-
-                    const status = getColorStatus(item.status);
+                    const startDate = covertDate(item.start_date);
+                    const endDate = covertDate(item.end_date);
                     return (
                       <TableRow key={item.id}>
                         <TableCell className="px-5 py-4 text-start">
-                          {item.orderCode}
+                          {item.code}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
-                          {item.userName}
+                          {item.quantity}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
-                          {item.userPhone}
+                          {item.type}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
-                          {formatTotalPrice}
+                          {startDate}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
-                          <Badge variant="solid" color={statusColors[status]}>
-                            {status}
+                          {endDate}
+                        </TableCell>
+                        <TableCell className="px-5 py-4 text-start">
+                          <Badge
+                            variant="solid"
+                            color={statusColors[statusVoucher.status]}
+                          >
+                            {statusVoucher.message}
                           </Badge>
+                        </TableCell>
+                        <TableCell className="px-5 py-4 text-start">
+                          <div className="flex items-center gap-3">
+                            <Link
+                              className="px-3 py-3 bg-blue-500 text-white rounded-xl"
+                              href={`/edit-voucher/${item.id}`}
+                            >
+                              Sửa
+                            </Link>
+                            {item.id && (
+                              <VoucherButtonDelete
+                                voucherId={item.id}
+                                voucherCode={item.code}
+                              />
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
