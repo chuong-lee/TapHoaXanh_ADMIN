@@ -36,13 +36,13 @@ export function CategoryButtonDelete({ id, name }: CategoryButtonDeleteProps) {
           try {
             await deleteProductVariantByProductId(item.id!);
           } catch (err) {
-            console.log("Lỗi: ", err);
+            console.log("Lỗi deleteProductVariantByProductId: ", err);
           }
 
           try {
             await deleteProductImagesByProductId(item.id!);
           } catch (err) {
-            console.log("Lỗi: ", err);
+            console.log("Lỗi deleteProductImagesByProductId: ", err);
           }
         }
       }

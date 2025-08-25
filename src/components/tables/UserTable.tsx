@@ -22,7 +22,6 @@ const UserTable: React.FC<TitleHeaderProps> = ({ searchItem, filterRole }) => {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10); // số sản phẩm mỗi trang
   const [totalPages, setTotalPages] = useState(1);
 
   const productVariantFields = ["Tên người dùng", "Email", "SĐT", "Hành động"];
@@ -31,7 +30,7 @@ const UserTable: React.FC<TitleHeaderProps> = ({ searchItem, filterRole }) => {
     const getAllProducts = async () => {
       try {
         const response = await api.get("users/search", {
-          params: { page, limit, search: searchItem, role: filterRole },
+          params: { page, limit: 10, search: searchItem, role: filterRole },
         });
         setAllUsers(response.data.data);
         setTotalPages(response.data.meta.lastPage);
@@ -42,7 +41,7 @@ const UserTable: React.FC<TitleHeaderProps> = ({ searchItem, filterRole }) => {
     };
 
     getAllProducts();
-  }, [page, limit, searchItem, filterRole]);
+  }, [page, searchItem, filterRole]);
 
   return (
     <>

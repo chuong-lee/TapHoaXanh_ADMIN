@@ -25,7 +25,6 @@ const CategoryTable: React.FC<TitleHeaderProps> = ({ parentId, search }) => {
     []
   );
   const [page, setPage] = useState(1);
-  const [limit] = useState(3);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +32,7 @@ const CategoryTable: React.FC<TitleHeaderProps> = ({ parentId, search }) => {
     const getAllProducts = async () => {
       try {
         const response = await api.get("/categories/search", {
-          params: { page, limit, parentId, search },
+          params: { page, limit: 10, parentId, search },
         });
 
         setAllCategories(response.data.data);
@@ -45,7 +44,7 @@ const CategoryTable: React.FC<TitleHeaderProps> = ({ parentId, search }) => {
     };
 
     getAllProducts();
-  }, [page, limit, parentId, search]);
+  }, [page, parentId, search]);
 
   return (
     <>

@@ -42,9 +42,14 @@ export default function FormEditVoucher() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { code, ...data } = voucher;
       await api.patch(`/voucher/${id}`, data);
-      showSuccessAndRedirect("Cập nhật voucher thành công!", router, "/voucher");
+      showSuccessAndRedirect(
+        "Cập nhật voucher thành công!",
+        router,
+        "/voucher"
+      );
     } catch (error) {
       console.log("Lỗi: ", error);
     }

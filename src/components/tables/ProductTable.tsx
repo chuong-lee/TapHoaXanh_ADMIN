@@ -51,13 +51,12 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   useEffect(() => {
     const getAllProducts = async () => {
       try {
         const response = await api.get("/products/search", {
-          params: { page, limit, category, brand, search },
+          params: { page, limit: 10, category, brand, search },
         });
 
         setAllProducts(response.data.data);
@@ -69,7 +68,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
     };
 
     getAllProducts();
-  }, [page, limit, category, brand, search]);
+  }, [page, category, brand, search]);
 
   const handleCheckStatusProduct = (
     expiry: string | Date

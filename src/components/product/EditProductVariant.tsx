@@ -60,6 +60,7 @@ export default function FormEditProductVariant() {
           price_modifier: data.price_modifier || 0,
           stock: data.stock || 0,
           productId: data.product.id || 0,
+          image_url: data.image_url || "",
         });
       } catch (error) {
         console.error("Lỗi khi lấy danh mục:", error);

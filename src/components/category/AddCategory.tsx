@@ -2,16 +2,15 @@
 
 import api from "@/app/lib/axios";
 import { showSuccessAndRedirect } from "@/app/utils/helper";
-import axios from "axios";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ComponentCard from "../common/ComponentCard";
+import FileInput from "../form/input/FileInput";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import Select, { Option } from "../form/Select";
-import FileInput from "../form/input/FileInput";
-import Image from "next/image";
 
 interface Category {
   id?: number;

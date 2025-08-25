@@ -27,7 +27,6 @@ const ProductVariants: React.FC<TitleHeaderProps> = ({
   );
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10); // số sản phẩm mỗi trang
   const [totalPages, setTotalPages] = useState(1);
 
   const productVariantFields = [
@@ -41,7 +40,7 @@ const ProductVariants: React.FC<TitleHeaderProps> = ({
     const getAllProducts = async () => {
       try {
         const response = await api.get("/product-variant/search", {
-          params: { page, limit, product: productId, search: searchItem },
+          params: { page, limit: 10, product: productId, search: searchItem },
         });
         setAllProductVariant(response.data.data);
         setTotalPages(response.data.meta.lastPage);
@@ -52,7 +51,7 @@ const ProductVariants: React.FC<TitleHeaderProps> = ({
     };
 
     getAllProducts();
-  }, [page, limit, productId, searchItem]);
+  }, [page, productId, searchItem]);
 
   const handleDeleteProduct = (
     id: number | undefined,

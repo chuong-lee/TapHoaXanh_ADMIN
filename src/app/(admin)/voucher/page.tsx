@@ -6,7 +6,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export default function VoucherPage() {
-  const [selectedOrder, setSelectedOrder] = useState("");
   const [searchInput, setSearchInput] = useState(""); // giá trị đang nhập
   const [searchTerm, setSearchTerm] = useState(""); // giá trị đã submit
 
@@ -71,7 +70,6 @@ export default function VoucherPage() {
             ]}
           >
             <VoucherTable
-              status={selectedOrder}
               search={searchTerm}
               start_date={startDate?.toISOString()}
               end_date={endDate?.toISOString()}

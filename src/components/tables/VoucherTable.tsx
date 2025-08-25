@@ -1,7 +1,9 @@
 "use client";
 import api from "@/app/lib/axios";
-import { OrderUser } from "@/interface/IOrder";
+import { Voucher } from "@/interface/IVoucher";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { VoucherButtonDelete } from "../modal/ModalVoucher";
 import { PaginationPage } from "../pagination/Pagination";
 import Badge, { BadgeColor } from "../ui/badge/Badge";
 import {
@@ -11,13 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { Voucher } from "@/interface/IVoucher";
-import Link from "next/link";
-import { ProductButtonDelete } from "../modal/ModalProduct";
-import { VoucherButtonDelete } from "../modal/ModalVoucher";
 
 interface TitleHeaderProps {
-  status?: string;
   search?: string;
   start_date?: string;
   end_date?: string;
@@ -46,7 +43,6 @@ const statusColors: Record<StatusVoucher, BadgeColor> = {
 };
 
 const VoucherTable: React.FC<TitleHeaderProps> = ({
-  status,
   search,
   start_date,
   end_date,
@@ -54,13 +50,12 @@ const VoucherTable: React.FC<TitleHeaderProps> = ({
   const [allVouchers, setAllVouchers] = useState<Voucher[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   useEffect(() => {
     const getAllProducts = async () => {
       try {
         const response = await api.get("/voucher/search", {
-          params: { page, limit, search, start_date, end_date },
+          params: { page, limit: 10, search, start_date, end_date },
         });
 
         setAllVouchers(response.data.data);
@@ -72,7 +67,7 @@ const VoucherTable: React.FC<TitleHeaderProps> = ({
     };
 
     getAllProducts();
-  }, [page, limit, search, status, start_date, end_date]);
+  }, [page, search, start_date, end_date]);
 
   const calculatorExpiredDate = (
     startDate: string,

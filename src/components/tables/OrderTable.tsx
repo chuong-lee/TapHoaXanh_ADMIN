@@ -42,13 +42,12 @@ const OrderTable: React.FC<TitleHeaderProps> = ({ status, search }) => {
   const [allProducts, setAllProducts] = useState<OrderUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   useEffect(() => {
     const getAllProducts = async () => {
       try {
         const response = await api.get("/order/search", {
-          params: { page, limit, search, status },
+          params: { page, limit: 10, search, status },
         });
 
         setAllProducts(response.data.data);
@@ -60,7 +59,7 @@ const OrderTable: React.FC<TitleHeaderProps> = ({ status, search }) => {
     };
 
     getAllProducts();
-  }, [page, limit, search, status]);
+  }, [page, search, status]);
 
   const getColorStatus = (status: string): StatusOrder => {
     switch (status) {
