@@ -115,7 +115,7 @@ const ProductVariants: React.FC<TitleHeaderProps> = ({
                             <Image
                               width={40}
                               height={40}
-                              src={"/images/product/product-05.jpg"}
+                              src={item.image_url}
                               alt={item.variant_name}
                             />
                           </div>
