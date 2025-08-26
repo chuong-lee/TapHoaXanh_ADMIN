@@ -5,10 +5,9 @@ import { ArrowDownIcon, ArrowUpIcon, GroupIcon } from "lucide-react";
 import api from "@/app/lib/axios";
 import Link from "next/link";
 
-export const EcommerceMetrics = () => {
+export const Revenue = () => {
   const [numberOfUser, setNumberOfUser] = useState(0);
   const [numberOfOrder, setNumberOfOrder] = useState(0);
-  const [numberOfRevenue, setNumberOfRevenue] = useState(0);
   useEffect(() => {
     const getNumberOfUser = async () => {
       const response = await api.get("/users/count");
@@ -20,21 +19,10 @@ export const EcommerceMetrics = () => {
       const response = await api.get("/order/count");
       setNumberOfOrder(response.data);
     };
-
-    const getTotalRevenueSuccess = async () => {
-      const response = await api.get("/order/revenue");
-      setNumberOfRevenue(response.data);
-    };
     getNumberOfUser();
     getNumberOfOrder();
-    getTotalRevenueSuccess();
   }, []);
 
-  function formatNumberWithComma(num: number): string {
-    return num.toLocaleString("en-US"); // hoặc "vi-VN" nếu muốn dùng dấu chấm cho VN
-  }
-
-  const totalRevenue = formatNumberWithComma(numberOfRevenue);
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
       {/* <!-- Metric Item Start --> */}
@@ -47,7 +35,7 @@ export const EcommerceMetrics = () => {
           <div className="flex items-end justify-between mt-5">
             <div>
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                Tổng số khách hàng
+                Customers
               </span>
               <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
                 {numberOfUser}
@@ -60,48 +48,27 @@ export const EcommerceMetrics = () => {
           </div>
         </div>
       </Link>
-
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-        <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-          <GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
-        </div>
-
-        <div className="flex items-end justify-between mt-5">
-          <div>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Tổng doanh thu
-            </span>
-            <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-              {totalRevenue}
-            </h4>
-          </div>
-          <Badge color="success">
-            <ArrowUpIcon />
-            11.01%
-          </Badge>
-        </div>
-      </div>
       {/* <!-- Metric Item End --> */}
 
       {/* <!-- Metric Item Start --> */}
       <Link href={"/order"}>
         <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
           <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-            <GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
+            {/* <BoxIconLine className="text-gray-800 dark:text-white/90" /> */}
           </div>
           <div className="flex items-end justify-between mt-5">
             <div>
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                Tổng đơn hàng
+                Orders
               </span>
               <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
                 {numberOfOrder}
               </h4>
             </div>
 
-            <Badge color="success">
-              <ArrowUpIcon />
-              11.01%
+            <Badge color="error">
+              <ArrowDownIcon className="text-error-500" />
+              9.05%
             </Badge>
           </div>
         </div>
