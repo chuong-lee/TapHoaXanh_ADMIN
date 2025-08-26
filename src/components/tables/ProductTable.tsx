@@ -26,7 +26,6 @@ const columns = [
   "Mã sản phẩm",
   "Giá sản phẩm",
   "Giá giảm",
-  "Số lượng sản phẩm",
   "trạng thái",
   "Hành động",
 ];

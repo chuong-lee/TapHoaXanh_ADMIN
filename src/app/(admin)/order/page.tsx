@@ -33,8 +33,6 @@ export default function OrderPage() {
         <PageBreadcrumb pageTitle="Quản lý đơn hàng" />
         <div className="space-y-6">
           <ComponentCard
-            desc="Thêm đơn hàng"
-            hrefLink="/add-order"
             filters={[
               {
                 label: "Lọc theo trạng thái đơn hàng:",
