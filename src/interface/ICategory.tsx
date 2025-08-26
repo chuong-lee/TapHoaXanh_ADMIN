@@ -8,10 +8,12 @@ export interface Category {
   name?: string;
   slug?: string;
   parentId?: string;
-  image_url: string;}
+  image_url: string;
+}
 
 export interface CategoryWithChildren {
   child_id?: number;
   child_name?: string;
   parent_name?: string;
+  child_image_url?: string;
 }

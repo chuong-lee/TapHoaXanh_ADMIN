@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Badge from "../ui/badge/Badge";
-import { ArrowDownIcon, ArrowUpIcon, GroupIcon } from "lucide-react";
 import api from "@/app/lib/axios";
+import { ArrowUpIcon, GroupIcon } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import Badge from "../ui/badge/Badge";
 
 export const EcommerceMetrics = () => {
   const [numberOfUser, setNumberOfUser] = useState(0);

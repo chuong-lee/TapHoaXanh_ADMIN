@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import Image from "next/image";
 
 interface TitleHeaderProps {
   parentId?: string;
@@ -89,6 +90,14 @@ const CategoryTable: React.FC<TitleHeaderProps> = ({ parentId, search }) => {
                     <TableRow key={item.child_id}>
                       <TableCell className="px-5 py-4 text-start">
                         <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 overflow-hidden rounded-full">
+                            <Image
+                              width={40}
+                              height={40}
+                              src={item.child_image_url || ""}
+                              alt={item.child_name || ""}
+                            />
+                          </div>
                           <div>
                             <span className="block font-medium">
                               {item.child_name}

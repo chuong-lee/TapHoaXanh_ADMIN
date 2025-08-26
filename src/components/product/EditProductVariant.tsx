@@ -29,7 +29,6 @@ export default function FormEditProductVariant() {
   const [preview, setPreview] = useState<string | null>(null);
   const [selectFile, setSelectFile] = useState<File | null>(null);
 
-
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement

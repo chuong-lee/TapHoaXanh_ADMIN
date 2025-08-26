@@ -94,7 +94,7 @@ export default function FormEditCategory() {
       formData.append("name", category);
       formData.append("slug", slug);
       formData.append("parent_id", parentId ? parentId : "0");
-      if (selectFile) formData.append("image_url", selectFile);
+      if (selectFile) formData.append("files", selectFile);
       await api.patch(`/categories/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
