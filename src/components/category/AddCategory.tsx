@@ -73,7 +73,7 @@ export default function FormAddCategory() {
       formData.append("name", category);
       formData.append("slug", slug);
       formData.append("parent_id", parentId ? parentId : "0");
-      if (selectFile) formData.append("image_url", selectFile);
+      if (selectFile) formData.append("files", selectFile);
       const response = await api.post("/categories", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
