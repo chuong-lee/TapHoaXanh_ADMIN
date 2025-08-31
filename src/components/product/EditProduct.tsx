@@ -210,7 +210,6 @@ export default function FormEditProduct() {
       // Append ảnh mới nếu có, nếu không thì server giữ ảnh cũ
 
       if (selectFile) {
-        console.log("🚀 ~ handleSubmit ~ selectFile:", selectFile);
         formData.append("images", selectFile);
       }
 
@@ -323,6 +322,7 @@ export default function FormEditProduct() {
               label="Ngày hết hạn"
               placeholder="Select a date"
               onChange={handleSelectDate}
+              defaultDate={product.expiry_date}
             />
             {errors.expiry_date && (
               <p className="text-red-500 text-sm mt-1">{errors.expiry_date}</p>
@@ -428,7 +428,7 @@ export default function FormEditProduct() {
             <Image
               width={500}
               height={500}
-              src={preview || `http://localhost:5000${product.images}`}
+              src={preview || product.images}
               alt={product.name || "product image"}
               className="mt-5"
             />

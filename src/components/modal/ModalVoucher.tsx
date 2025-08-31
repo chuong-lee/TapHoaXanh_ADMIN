@@ -1,10 +1,6 @@
 import {
-  deleteCategory,
-  deleteProductByCategoryId,
-  deleteProductImagesByProductId,
-  deleteProductVariantByProductId,
+  deleteVoucher
 } from "@/app/lib/api/delete.api";
-import { getProductByCategoryId } from "@/app/lib/api/get.api";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,42 +15,25 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface CategoryButtonDeleteProps {
-  id: string | number;
-  name: string;
+interface ProductButtonDeleteProps {
+  voucherId: string | number;
+  voucherCode: string;
 }
 
-export function CategoryButtonDelete({ id, name }: CategoryButtonDeleteProps) {
+export function VoucherButtonDelete({
+  voucherId,
+  voucherCode,
+}: ProductButtonDeleteProps) {
   const [open, setOpen] = useState(false);
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      const getProduct = await getProductByCategoryId(id);
-
-      if (getProduct) {
-        for (const item of getProduct.data) {
-          try {
-            await deleteProductVariantByProductId(item.id!);
-          } catch (err) {
-            console.log("Lỗi deleteProductVariantByProductId: ", err);
-          }
-
-          try {
-            await deleteProductImagesByProductId(item.id!);
-          } catch (err) {
-            console.log("Lỗi deleteProductImagesByProductId: ", err);
-          }
-        }
-      }
-
-      await deleteProductByCategoryId(id);
-      await deleteCategory(id);
-
-      toast.success(`Xóa sản phẩm ${name} thành công`);
+      await deleteVoucher(voucherId);
+      toast.success(`Xóa voucher có mã ${voucherCode} thành công`);
       setOpen(false);
       setTimeout(() => {
         window.location.reload();
-      }, 1500);
+      }, 1500); // đợi 1.5s rồi F5
     } catch (error) {
       toast.error(`Lỗi khi xóa: ${error}`);
     }
@@ -69,13 +48,18 @@ export function CategoryButtonDelete({ id, name }: CategoryButtonDeleteProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md z-[10000]">
         <DialogHeader>
-          <DialogTitle className="uppercase">Xóa danh mục {name}</DialogTitle>
+          <DialogTitle className="uppercase">
+            Xóa voucher mã{" "}
+            <span className="text-red-500 uppercase font-bold">
+              {voucherCode}
+            </span>
+          </DialogTitle>
           <DialogDescription className="text-[#000]">
-            Nếu bạn muốn xóa danh mục{" "}
-            <span className="text-red-500 uppercase font-bold">{name}</span> thì
-            bạn phải <span className="font-bold">xóa toàn bộ biến thể</span> và{" "}
-            <span className="font-bold">hình ảnh</span> liên quan đến danh mục
-            này
+            Bạn có chắc muốn xóa mã voucher là{" "}
+            <span className="text-red-500 uppercase font-bold">
+              {voucherCode}
+            </span>{" "}
+            không ?
           </DialogDescription>
         </DialogHeader>
 

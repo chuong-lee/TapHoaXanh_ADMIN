@@ -14,13 +14,17 @@ import Label from "../form/Label";
 import Select, { Option } from "../form/Select";
 import { showSuccessAndRedirect } from "@/app/utils/helper";
 import { useRouter } from "next/navigation";
+import FileInput from "../form/input/FileInput";
+import Image from "next/image";
 
 export default function FormAddProductVariant() {
   const [productVariant, setProductVariant] = useState<ProductVariant>(
     defaultProductVariant
   );
   const [products, setProducts] = useState(listProduct);
-  const router = useRouter()
+  const router = useRouter();
+  const [selectFile, setSelectFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -61,13 +65,34 @@ export default function FormAddProductVariant() {
     }));
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files?.length) {
+      setSelectFile(event.target.files[0]);
+      const previewUrl = URL.createObjectURL(event.target.files[0]);
+      setPreview(previewUrl);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const data = { ...productVariant };
     try {
-      await api.post("/product-variant", data);
+      const formData = new FormData();
+      formData.append("variant_name", productVariant.variant_name);
+      formData.append("price_modifier", String(productVariant.price_modifier));
+      formData.append("stock", String(productVariant.stock));
+      formData.append("productId", String(productVariant.productId));
+      if (selectFile) formData.append("image_url", selectFile);
+      await api.post("/product-variant", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       setProductVariant(defaultProductVariant);
-      showSuccessAndRedirect("Thêm biến thể sản phẩm thành công", router, "/product-variant");
+      showSuccessAndRedirect(
+        "Thêm biến thể sản phẩm thành công",
+        router,
+        "/product-variant"
+      );
     } catch (error) {
       console.error("Lỗi khi thêm biến thể sản phẩm:", error);
     }
@@ -122,10 +147,27 @@ export default function FormAddProductVariant() {
               <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400"></span>
             </div>
           </div>
+
+          <div className="col-span-2">
+            <Label>Hình ảnh</Label>
+            <FileInput onChange={handleFileChange} className="custom-class" />
+            {preview && (
+              <Image
+                width={500}
+                height={500}
+                src={preview}
+                alt={productVariant.image_url || "product image"}
+                className="mt-5"
+              />
+            )}
+          </div>
         </div>
 
         <div className="flex justify-end space-x-4 mt-6">
-          <Link href="/product-variant" className="bg-gray-300 px-3 py-3 rounded-xl">
+          <Link
+            href="/product-variant"
+            className="bg-gray-300 px-3 py-3 rounded-xl"
+          >
             Huỷ
           </Link>
           <button

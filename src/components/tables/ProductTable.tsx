@@ -26,7 +26,6 @@ const columns = [
   "Mã sản phẩm",
   "Giá sản phẩm",
   "Giá giảm",
-  "Số lượng sản phẩm",
   "trạng thái",
   "Hành động",
 ];
@@ -51,13 +50,12 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   useEffect(() => {
     const getAllProducts = async () => {
       try {
         const response = await api.get("/products/search", {
-          params: { page, limit, category, brand, search },
+          params: { page, limit: 10, category, brand, search },
         });
 
         setAllProducts(response.data.data);
@@ -69,7 +67,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
     };
 
     getAllProducts();
-  }, [page, limit, category, brand, search]);
+  }, [page, category, brand, search]);
 
   const handleCheckStatusProduct = (
     expiry: string | Date
@@ -152,7 +150,6 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                     );
 
                     const formatPrice = formatNumberWithComma(item.price);
-                    const formatQuantity = formatNumberWithComma(item.quantity);
                     return (
                       <TableRow key={item.id}>
                         <TableCell className="px-5 py-4 text-start">
@@ -161,7 +158,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                               <Image
                                 width={40}
                                 height={40}
-                                src={`http://localhost:5000${item.images}`}
+                                src={item.images}
                                 alt={item.name}
                               />
                             </div>
@@ -180,9 +177,6 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
                           {discountPrice}
-                        </TableCell>
-                        <TableCell className="px-5 py-4 text-start">
-                          {formatQuantity}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
                           <Badge

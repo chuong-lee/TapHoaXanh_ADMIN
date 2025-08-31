@@ -4,12 +4,19 @@ import Select, { Option } from "../form/Select";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { FaMagnifyingGlass } from "react-icons/fa6";
+import DatePicker from "../form/date-picker";
 
 interface FilterProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
   options: Option[];
+}
+
+interface GetDateProps {
+  label: string;
+  titleId: string;
+  onChange: (value: Date[]) => void;
 }
 
 interface SearchProps {
@@ -25,6 +32,7 @@ interface ComponentCardProps {
   filters?: FilterProps[]; // Optional filter prop
   search?: SearchProps; // Optional search prop
   onSubmit?: () => void;
+  filterByDate?: GetDateProps[];
 }
 
 const ComponentCard: React.FC<ComponentCardProps> = ({
@@ -36,6 +44,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
   filters,
   search,
   onSubmit,
+  filterByDate,
 }) => {
   return (
     <div
@@ -68,6 +77,21 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
                   className="h-11 w-full xl:w-[200px]"
                 />
               </div>
+            ))}
+          </div>
+        )}
+
+        {/* Date Filters */}
+        {filterByDate && filterByDate.length > 0 && (
+          <div className="flex flex-wrap gap-4 w-full xl:w-auto">
+            {filterByDate.map((filter, idx) => (
+              <DatePicker
+                id={filter.titleId}
+                label={filter.label}
+                key={idx}
+                onChange={filter.onChange}
+                placeholder="Select a date"
+              />
             ))}
           </div>
         )}

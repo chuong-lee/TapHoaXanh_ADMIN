@@ -10,6 +10,8 @@ import Label from "../form/Label";
 import Select, { Option } from "../form/Select";
 import { useParams, useRouter } from "next/navigation";
 import { showSuccessAndRedirect } from "@/app/utils/helper";
+import FileInput from "../form/input/FileInput";
+import Image from "next/image";
 
 interface Category {
   id?: number;
@@ -27,6 +29,9 @@ export default function FormEditCategory() {
   const params = useParams();
   const id = params.id;
   const router = useRouter();
+  const [selectFile, setSelectFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [imageURL, setImageURL] = useState<string>("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -56,6 +61,7 @@ export default function FormEditCategory() {
         setCategory(data.name || "");
         setSlug(data.slug || "");
         setParentId(data.parent_id || "");
+        setImageURL(data.image_url || "");
       } catch (error) {
         console.error("Lỗi khi lấy danh mục:", error);
       }
@@ -71,9 +77,6 @@ export default function FormEditCategory() {
       label: cat.name ?? "",
     }));
 
-  const defaultValue = options.find((opt) => opt.value === parentId.toString());
-  console.log("11111", defaultValue);
-
   const slugify = (text: string): string => {
     return text
       .normalize("NFD") // tách dấu ra khỏi ký tự
@@ -86,13 +89,17 @@ export default function FormEditCategory() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const data = {
-      name: category,
-      slug: slug,
-      parent_id: parentId,
-    };
     try {
-      await api.patch(`/categories/${id}`, data);
+      const formData = new FormData();
+      formData.append("name", category);
+      formData.append("slug", slug);
+      formData.append("parent_id", parentId ? parentId : "0");
+      if (selectFile) formData.append("files", selectFile);
+      await api.patch(`/categories/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       setCategory("");
       setSlug("");
       setParentId("");
@@ -121,6 +128,14 @@ export default function FormEditCategory() {
 
   const handleSelectChange = (value: string) => {
     setParentId(value);
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files?.length) {
+      setSelectFile(event.target.files[0]);
+      const previewUrl = URL.createObjectURL(event.target.files[0]);
+      setPreview(previewUrl);
+    }
   };
 
   return (
@@ -163,6 +178,18 @@ export default function FormEditCategory() {
               />
               <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400"></span>
             </div>
+          </div>
+
+          <div className="col-span-2">
+            <Label>Hình ảnh</Label>
+            <FileInput onChange={handleFileChange} className="custom-class" />
+            <Image
+              width={500}
+              height={500}
+              src={preview || imageURL}
+              alt={category || "product image"}
+              className="mt-5"
+            />
           </div>
         </div>
 
