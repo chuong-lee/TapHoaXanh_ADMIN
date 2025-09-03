@@ -14,10 +14,20 @@ export default function ProductPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await api.get("/products");
-        setAllProducts(response.data);
+        const response = await api.get("/products/search", {
+          params: { page: 1, limit: 100 },
+        });
+        const data = response.data as { data?: Product[]; products?: Product[]; items?: Product[]; result?: { items?: Product[] } };
+        let products: Product[] = [];
+        if (Array.isArray(data)) products = data;
+        else if (Array.isArray(data?.data)) products = data.data;
+        else if (Array.isArray(data?.products)) products = data.products;
+        else if (Array.isArray(data?.items)) products = data.items;
+        else if (Array.isArray(data?.result?.items)) products = data.result.items;
+        setAllProducts(products);
       } catch (error) {
         console.error("Error fetching products:", error);
+        setAllProducts([]);
       }
     };
 

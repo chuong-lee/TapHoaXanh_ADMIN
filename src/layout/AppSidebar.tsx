@@ -14,6 +14,9 @@ import {
   FaMoneyBillTransfer,
   FaRegCalendarCheck,
   FaRegCircleUser,
+  FaChartLine,
+  FaStar,
+  FaNewspaper,
 } from "react-icons/fa6";
 // import SidebarWidget from "./SidebarWidget";
 
@@ -29,6 +32,11 @@ const navItems: NavItem[] = [
     icon: <AiOutlineAppstore className="w-6 h-6" />,
     name: "Thống kê",
     path: "/dashboard",
+  },
+  {
+    icon: <FaChartLine className="w-6 h-6" />,
+    name: "Lịch sử doanh thu",
+    path: "/revenue-history",
   },
   {
     icon: <AiOutlineSkin className="w-6 h-6" />,
@@ -72,6 +80,16 @@ const navItems: NavItem[] = [
     icon: <FaCartPlus className="w-6 h-6" />,
     name: "Quản lý đơn hàng",
     path: "/order",
+  },
+  {
+    icon: <FaStar className="w-6 h-6" />,
+    name: "Quản lý đánh giá",
+    path: "/review",
+  },
+  {
+    icon: <FaNewspaper className="w-6 h-6" />,
+    name: "Quản lý bài viết",
+    path: "/article",
   },
 ];
 

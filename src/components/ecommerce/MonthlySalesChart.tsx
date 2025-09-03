@@ -10,6 +10,57 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 export default function MonthlySalesChart() {
+  const [revenueMonth, setRevenueMonth] = useState<number[]>([]);
+  const [monthCategories, setMonthCategories] = useState<string[]>([]);
+
+  // Lấy tháng và năm hiện tại
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1;
+  const currentYear = currentDate.getFullYear();
+
+  useEffect(() => {
+    const getMonthlyRevenue = async () => {
+      try {
+        // Tạo danh sách tháng từ tháng 5 đến tháng hiện tại
+        const months = [] as number[];
+        const categories = [] as string[];
+        
+        // Chỉ hiển thị từ tháng 5 đến tháng hiện tại
+        const startMonth = 5;
+        const endMonth = currentMonth;
+        
+        for (let month = startMonth; month <= endMonth; month++) {
+          months.push(month);
+          categories.push(getMonthName(month));
+        }
+
+        // Gọi API để lấy doanh thu cho các tháng từ 5 đến hiện tại
+        const response = await api.get("/order/revenue-month-range", {
+          params: { 
+            year: currentYear,
+            startMonth: startMonth,
+            endMonth: endMonth
+          },
+        });
+        
+        setRevenueMonth(response.data);
+        setMonthCategories(categories);
+      } catch (error) {
+        console.error("Lỗi khi lấy doanh thu theo tháng:", error);
+        setRevenueMonth([]);
+        setMonthCategories([]);
+      }
+    };
+
+    getMonthlyRevenue();
+  }, []);
+
+  // Hàm chuyển đổi số tháng thành tên tháng
+  const getMonthName = (month: number): string => {
+    const monthNames = ["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12"];
+    return monthNames[month - 1];
+  };
+
   const options: ApexOptions = {
     colors: ["#465fff"],
     chart: {
@@ -37,20 +88,7 @@ export default function MonthlySalesChart() {
       colors: ["transparent"],
     },
     xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+      categories: monthCategories,
       axisBorder: {
         show: false,
       },
@@ -66,7 +104,7 @@ export default function MonthlySalesChart() {
     },
     yaxis: {
       title: {
-        text: undefined,
+        text: "Doanh thu (VNĐ)",
       },
     },
     grid: {
@@ -79,27 +117,15 @@ export default function MonthlySalesChart() {
     fill: {
       opacity: 1,
     },
-
     tooltip: {
       x: {
         show: false,
       },
       y: {
-        formatter: (val: number) => `${val}`,
+        formatter: (val: number) => `${val.toLocaleString('vi-VN')} ₫`,
       },
     },
   };
-
-  const [revenueMonth, setRevenueMonth] = useState<number[]>([]);
-  useEffect(() => {
-    const getMonthyRevenue = async () => {
-      const response = await api.get("/order/revenue-month", {
-        params: { year: 2025 },
-      });
-      setRevenueMonth(response.data);
-    };
-    getMonthyRevenue();
-  }, []);
 
   const series = [
     {
@@ -112,7 +138,7 @@ export default function MonthlySalesChart() {
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Doanh thu theo tháng
+          Doanh thu theo tháng (Từ tháng 5)
         </h3>
       </div>
 

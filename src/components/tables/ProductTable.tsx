@@ -54,15 +54,42 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
   useEffect(() => {
     const getAllProducts = async () => {
       try {
-        const response = await api.get("/products/search", {
-          params: { page, limit: 10, category, brand, search },
-        });
+        setLoading(true);
+        const params: Record<string, unknown> = { page, limit: 10 };
+        if (category) params.category = category;
+        if (brand) params.brand = brand;
+        if (search) params.search = search;
 
-        setAllProducts(response.data.data);
-        setTotalPages(response.data.meta.lastPage);
-        setLoading(false);
+        const response = await api.get("/products/search", { params });
+
+        const data = response.data as any;
+        let products: Product[] = [];
+        let lastPage = 1;
+
+        if (Array.isArray(data)) {
+          products = data as Product[];
+        } else if (data) {
+          if (Array.isArray(data.data)) products = data.data;
+          else if (Array.isArray(data.products)) products = data.products;
+          else if (Array.isArray(data.items)) products = data.items;
+          else if (Array.isArray(data.result?.items)) products = data.result.items;
+
+          lastPage = data.meta?.lastPage
+            ?? data.meta?.pagination?.lastPage
+            ?? data.totalPages
+            ?? data.pagination?.totalPages
+            ?? data.result?.pagination?.lastPage
+            ?? 1;
+        }
+
+        setAllProducts(products ?? []);
+        setTotalPages(Math.max(1, Number(lastPage) || 1));
       } catch (error) {
         console.error("Lỗi khi lấy sản phẩm:", error);
+        setAllProducts([]);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -75,10 +102,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
     const date = typeof expiry === "string" ? new Date(expiry) : expiry;
     const now = new Date();
 
-    // Số mili-giây chênh lệch
     const diffMs = date.getTime() - now.getTime();
-
-    // Chuyển sang số ngày
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     let status: Status;
@@ -95,7 +119,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
   };
 
   function formatNumberWithComma(num: number): string {
-    return num.toLocaleString("en-US"); // hoặc "vi-VN" nếu muốn dùng dấu chấm cho VN
+    return num.toLocaleString("en-US");
   }
   const handleDiscount = (price: number, discount: number) => {
     const discountAmount = (price * discount) / 100;
@@ -107,28 +131,24 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
         <div className="max-w-full overflow-x-auto">
           <div className="min-w-[1102px]">
             <Table>
-              {/* Table Header */}
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
                   {columns.map((item, index) => (
-                    <>
-                      <TableCell
-                        isHeader
-                        className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
-                        key={index}
-                      >
-                        {item}
-                      </TableCell>
-                    </>
+                    <TableCell
+                      isHeader
+                      className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
+                      key={index}
+                    >
+                      {item}
+                    </TableCell>
                   ))}
                 </TableRow>
               </TableHeader>
 
-              {/* Table Body */}
               <TableBody className="divide-y divide-gray-100">
                 {loading ? (
                   <TableRow>
-                    <TableCell className="text-center py-4 text-gray-500">
+                    <TableCell className="text-center py-4 text-gray-500" colSpan={columns.length}>
                       Đang tải sản phẩm...
                     </TableCell>
                   </TableRow>
@@ -136,7 +156,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                   <TableRow>
                     <TableCell
                       className="text-center py-4 text-gray-500"
-                      colSpan={5}
+                      colSpan={columns.length}
                     >
                       Không có sản phẩm nào.
                     </TableCell>
@@ -150,6 +170,12 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                     );
 
                     const formatPrice = formatNumberWithComma(item.price);
+                    const imageSrc = (item as any)?.images?.[0]
+                      || (item as any)?.image
+                      || (item as any)?.thumbnail
+                      || (item as any)?.images
+                      || "/product/default.jpg";
+
                     return (
                       <TableRow key={item.id}>
                         <TableCell className="px-5 py-4 text-start">
@@ -158,7 +184,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                               <Image
                                 width={40}
                                 height={40}
-                                src={item.images}
+                                src={imageSrc}
                                 alt={item.name}
                               />
                             </div>

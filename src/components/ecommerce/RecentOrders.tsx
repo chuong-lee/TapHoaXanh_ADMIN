@@ -11,18 +11,14 @@ import {
   TableRow,
 } from "../ui/table";
 
-// Define the TypeScript interface for the table rows
 interface Product {
-  id: number; // Unique identifier for each product
-  name: string; // Product name
-  barcode: string; // Category of the product
-  purchase: string; // Price of the product (as a string with currency symbol)
-  // status: string; // Status of the product
-  images: string; // URL or path to the product image
-  status: "Delivered" | "Pending" | "Canceled"; // Status of the product
+  id: number;
+  name: string;
+  barcode: string;
+  purchase: string;
+  images: string;
+  status: "Delivered" | "Pending" | "Canceled";
 }
-
-// Define the table data using the interface
 
 const listMenu = ["Tên sản phẩm", "Mã sản phẩm", "Lượt mua"];
 
@@ -56,7 +52,6 @@ export default function RecentOrders() {
       </div>
       <div className="max-w-full overflow-x-auto">
         <Table>
-          {/* Table Header */}
           <TableHeader className="border-gray-100 dark:border-gray-800 border-y">
             <TableRow>
               {listMenu.map((item, index) => (
@@ -70,8 +65,6 @@ export default function RecentOrders() {
               ))}
             </TableRow>
           </TableHeader>
-
-          {/* Table Body */}
 
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
             {tableData.map((product) => (
