@@ -52,3 +52,4 @@ export async function query(sql: string, params?: any[]): Promise<any> {
     throw error;
   }
 }
+
