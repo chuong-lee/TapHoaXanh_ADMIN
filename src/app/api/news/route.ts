@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     }
     const total = countResult[0].count;
 
-    // Lấy danh sách tin tức với phân trang
+    // Lấy danh sách tin tức với phân trang và thông tin phân loại
     let sql = `
       SELECT 
         n.id, n.name, n.summary, n.description, n.images, n.views, 
@@ -90,7 +90,11 @@ export async function GET(request: NextRequest) {
       authorName: item.authorName || 'Tác giả không xác định',
       authorAvatar: item.authorAvatar || "/images/user/default-avatar.jpg",
       category_id: item.category_id ? item.category_id.toString() : '',
-      type: item.type,
+      categoryName: getCategoryName(item.category_id, item.type),
+      categoryDescription: getCategoryDescription(item.type),
+      categoryColor: getCategoryColor(item.type),
+      categoryIcon: getCategoryIcon(item.type),
+      type: item.type || 'Tin tức',
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
       deletedAt: item.deletedAt,
@@ -156,4 +160,81 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// Hàm helper để lấy tên phân loại dựa trên type
+function getCategoryName(categoryId: any, type: string): string {
+  if (categoryId) {
+    // Nếu có category_id, có thể là tên phân loại cụ thể
+    return 'Phân loại ' + categoryId;
+  }
+  
+  const typeLabels: { [key: string]: string } = {
+    'news': 'Tin tức',
+    'promotion': 'Khuyến mãi',
+    'guide': 'Hướng dẫn',
+    'recipe': 'Công thức',
+    'health': 'Sức khỏe',
+    'lifestyle': 'Lối sống',
+    'business': 'Kinh doanh',
+    'technology': 'Công nghệ',
+    'education': 'Giáo dục',
+    'entertainment': 'Giải trí'
+  };
+  
+  return typeLabels[type?.toLowerCase()] || 'Không phân loại';
+}
+
+// Hàm helper để lấy mô tả phân loại
+function getCategoryDescription(type: string): string {
+  const descriptions: { [key: string]: string } = {
+    'news': 'Các tin tức mới nhất và cập nhật',
+    'promotion': 'Các chương trình khuyến mãi và ưu đãi',
+    'guide': 'Hướng dẫn và tips hữu ích',
+    'recipe': 'Các công thức nấu ăn ngon',
+    'health': 'Thông tin về sức khỏe và dinh dưỡng',
+    'lifestyle': 'Phong cách sống và xu hướng',
+    'business': 'Tin tức về kinh doanh và thị trường',
+    'technology': 'Công nghệ mới và xu hướng',
+    'education': 'Thông tin giáo dục và học tập',
+    'entertainment': 'Tin tức giải trí và văn hóa'
+  };
+  
+  return descriptions[type?.toLowerCase()] || 'Loại tin tức chung';
+}
+
+// Hàm helper để lấy màu phân loại
+function getCategoryColor(type: string): string {
+  const colors: { [key: string]: string } = {
+    'news': '#3B82F6',
+    'promotion': '#EF4444',
+    'guide': '#10B981',
+    'recipe': '#F59E0B',
+    'health': '#8B5CF6',
+    'lifestyle': '#EC4899',
+    'business': '#06B6D4',
+    'technology': '#84CC16',
+    'education': '#F97316',
+    'entertainment': '#A855F7'
+  };
+  
+  return colors[type?.toLowerCase()] || '#6B7280';
+}
+
+// Hàm helper để lấy icon phân loại
+function getCategoryIcon(type: string): string {
+  const icons: { [key: string]: string } = {
+    'news': '📰',
+    'promotion': '🎉',
+    'guide': '📚',
+    'recipe': '👨‍🍳',
+    'health': '💚',
+    'lifestyle': '🌟',
+    'business': '💼',
+    'technology': '💻',
+    'education': '🎓',
+    'entertainment': '🎭'
+  };
+  
+  return icons[type?.toLowerCase()] || '📰';
 }

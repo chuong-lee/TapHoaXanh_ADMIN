@@ -12,6 +12,7 @@ export interface INews {
   authorAvatar?: string;
   category_id?: string;
   categoryName?: string;
+  categorySlug?: string;
   type?: string;
   createdAt: string;
   updatedAt: string;
@@ -43,3 +44,11 @@ export interface INewsStats {
   likes: number;
   comments: number;
 }
+export interface ICategory {
+  id: string;
+  name: string;
+  slug: string;
+  image_url?: string;
+  parent_id: string;
+}
+
