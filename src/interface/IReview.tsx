@@ -8,9 +8,11 @@ export interface IReview {
   rating: number;
   comment: string;
   images?: string[];
-  isApproved: boolean;
-  isRejected: boolean;
+  status: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string;
+  adminId?: string;
+  adminName?: string;
+  reviewedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -25,8 +27,24 @@ export interface IReviewForm {
 export interface IReviewFilter {
   productId?: string;
   rating?: number;
-  isApproved?: boolean;
-  isRejected?: boolean;
+  status?: 'pending' | 'approved' | 'rejected';
   dateFrom?: string;
   dateTo?: string;
+}
+
+export interface IReviewStats {
+  total: number;
+  approved: number;
+  rejected: number;
+  pending: number;
+  approvedPercentage: number;
+  rejectedPercentage: number;
+  pendingPercentage: number;
+}
+
+export interface IReviewAction {
+  reviewId: string;
+  action: 'approve' | 'reject';
+  rejectionReason?: string;
+  adminId: string;
 }

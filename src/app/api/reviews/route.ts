@@ -5,6 +5,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const rating = searchParams.get('rating');
+    const status = searchParams.get('status');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = (page - 1) * limit;
@@ -16,6 +17,31 @@ export async function GET(request: NextRequest) {
     if (rating && rating.trim() !== '') {
       whereConditions.push('r.rating = ?');
       queryParams.push(parseInt(rating));
+    }
+
+    // Kiểm tra cấu trúc bảng rating thực tế
+    let hasStatusField = false;
+    let hasApprovedFields = false;
+    
+    try {
+      // Kiểm tra trường status
+      const checkStatusSql = 'SHOW COLUMNS FROM rating LIKE "status"';
+      const statusFieldCheck = await query(checkStatusSql);
+      hasStatusField = statusFieldCheck.length > 0;
+      
+      // Kiểm tra trường isApproved
+      const checkApprovedSql = 'SHOW COLUMNS FROM rating LIKE "isApproved"';
+      const approvedFieldCheck = await query(checkApprovedSql);
+      hasApprovedFields = approvedFieldCheck.length > 0;
+      
+      console.log('Bảng rating - hasStatusField:', hasStatusField, 'hasApprovedFields:', hasApprovedFields);
+    } catch (error) {
+      console.log('Không thể kiểm tra cấu trúc bảng rating:', error);
+    }
+
+    if (status && status.trim() !== '' && hasStatusField) {
+      whereConditions.push('r.status = ?');
+      queryParams.push(status);
     }
 
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
@@ -35,19 +61,56 @@ export async function GET(request: NextRequest) {
     }
     const total = countResult[0].count;
 
-    // Lấy danh sách đánh giá với phân trang - sử dụng cấu trúc bảng hiện tại
-    let sql = `
-      SELECT 
-        r.id, r.rating, r.comment, r.createdAt, r.updatedAt,
-        r.user_id, r.product_id,
-        p.name as productName, p.images as productImages,
-        u.name as userName, u.image as userImage
-      FROM rating r
-      LEFT JOIN product p ON r.product_id = p.id
-      LEFT JOIN users u ON r.user_id = u.id
-      ${whereClause}
-      ORDER BY r.createdAt DESC
-    `;
+    // Lấy danh sách đánh giá với phân trang - xử lý theo cấu trúc bảng thực tế
+    let sql: string;
+    
+    if (hasStatusField) {
+      // Sử dụng cấu trúc bảng mới với trường status
+      sql = `
+        SELECT 
+          r.id, r.rating, r.comment, r.status, r.rejectionReason, 
+          r.admin_id, r.reviewedAt, r.createdAt, r.updatedAt,
+          r.user_id, r.product_id,
+          p.name as productName, p.images as productImages,
+          u.name as userName, u.image as userImage,
+          a.name as adminName
+        FROM rating r
+        LEFT JOIN product p ON r.product_id = p.id
+        LEFT JOIN users u ON r.user_id = u.id
+        LEFT JOIN users a ON r.admin_id = a.id
+        ${whereClause}
+        ORDER BY r.createdAt DESC
+      `;
+    } else if (hasApprovedFields) {
+      // Sử dụng cấu trúc bảng với isApproved và isRejected
+      sql = `
+        SELECT 
+          r.id, r.rating, r.comment, r.isApproved, r.isRejected, r.rejectionReason,
+          r.createdAt, r.updatedAt,
+          r.user_id, r.product_id,
+          p.name as productName, p.images as productImages,
+          u.name as userName, u.image as userImage
+        FROM rating r
+        LEFT JOIN product p ON r.product_id = p.id
+        LEFT JOIN users u ON r.user_id = u.id
+        ${whereClause}
+        ORDER BY r.createdAt DESC
+      `;
+    } else {
+      // Sử dụng cấu trúc bảng cơ bản (chỉ có các trường cơ bản)
+      sql = `
+        SELECT 
+          r.id, r.rating, r.comment, r.createdAt, r.updatedAt,
+          r.user_id, r.product_id,
+          p.name as productName, p.images as productImages,
+          u.name as userName, u.image as userImage
+        FROM rating r
+        LEFT JOIN product p ON r.product_id = p.id
+        LEFT JOIN users u ON r.user_id = u.id
+        ${whereClause}
+        ORDER BY r.createdAt DESC
+      `;
+    }
 
     // Thêm LIMIT và OFFSET vào câu SQL
     sql += ` LIMIT ${limit} OFFSET ${offset}`;
@@ -59,24 +122,56 @@ export async function GET(request: NextRequest) {
       reviews = await query(sql);
     }
 
-    // Format dữ liệu trả về - mặc định tất cả đánh giá đều "đã duyệt" vì chưa có trường status
-    const formattedReviews = reviews.map((review: any) => ({
-      id: review.id.toString(), // Chuyển int thành string
-      productId: review.product_id ? review.product_id.toString() : '',
-      productName: review.productName || 'Sản phẩm không xác định',
-      productImage: review.productImages ? review.productImages.split(',')[0] : '/images/product/default.jpg', // Lấy ảnh đầu tiên
-      userId: review.user_id ? review.user_id.toString() : '',
-      userName: review.userName || 'Người dùng không xác định',
-      userAvatar: review.userImage || "/images/user/default-avatar.jpg",
-      rating: review.rating,
-      comment: review.comment,
-      images: [], // Bảng rating hiện tại không có trường images
-      isApproved: true, // Mặc định đã duyệt vì chưa có trường này
-      isRejected: false,
-      rejectionReason: undefined,
-      createdAt: review.createdAt,
-      updatedAt: review.updatedAt,
-    }));
+    // Format dữ liệu trả về - xử lý theo cấu trúc bảng thực tế
+    const formattedReviews = reviews.map((review: any) => {
+      let reviewStatus = 'pending';
+      let rejectionReason = undefined;
+      let adminId = undefined;
+      let adminName = undefined;
+      let reviewedAt = undefined;
+
+      if (hasStatusField) {
+        // Sử dụng trường status mới
+        reviewStatus = review.status || 'pending';
+        rejectionReason = review.rejectionReason;
+        adminId = review.admin_id ? review.admin_id.toString() : undefined;
+        adminName = review.adminName;
+        reviewedAt = review.reviewedAt;
+      } else if (hasApprovedFields) {
+        // Chuyển đổi từ isApproved/isRejected sang status
+        if (review.isApproved) {
+          reviewStatus = 'approved';
+        } else if (review.isRejected) {
+          reviewStatus = 'rejected';
+        } else {
+          reviewStatus = 'pending';
+        }
+        rejectionReason = review.rejectionReason;
+      } else {
+        // Bảng cơ bản - mặc định là pending
+        reviewStatus = 'pending';
+      }
+
+      return {
+        id: review.id.toString(),
+        productId: review.product_id ? review.product_id.toString() : '',
+        productName: review.productName || 'Sản phẩm không xác định',
+        productImage: review.productImages ? review.productImages.split(',')[0] : '/images/product/default.jpg',
+        userId: review.user_id ? review.user_id.toString() : '',
+        userName: review.userName || 'Người dùng không xác định',
+        userAvatar: review.userImage || "/images/user/default-avatar.jpg",
+        rating: review.rating,
+        comment: review.comment,
+        images: [], // Bảng rating hiện tại không có trường images
+        status: reviewStatus,
+        rejectionReason: rejectionReason,
+        adminId: adminId,
+        adminName: adminName,
+        reviewedAt: reviewedAt,
+        createdAt: review.createdAt,
+        updatedAt: review.updatedAt,
+      };
+    });
 
     return NextResponse.json({
       reviews: formattedReviews,

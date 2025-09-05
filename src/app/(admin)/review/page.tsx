@@ -160,20 +160,7 @@ const ReviewManagement: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Quản lý đánh giá</h1>
         <p className="text-gray-600">Duyệt và quản lý đánh giá sản phẩm từ khách hàng</p>
         
-        {/* Thông báo về tính năng chưa hoàn thiện */}
-        <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <div className="flex items-center">
-            <FaInfoCircle className="text-yellow-600 mr-2" />
-            <div>
-              <p className="text-yellow-800 font-medium">Lưu ý:</p>
-              <p className="text-yellow-700 text-sm">
-                Chức năng duyệt/từ chối đánh giá chưa được kích hoạt vì database chưa có các trường cần thiết. 
-                Hiện tại tất cả đánh giá đều được coi là "đã duyệt". 
-                Vui lòng cập nhật database schema để sử dụng đầy đủ tính năng.
-              </p>
-            </div>
-          </div>
-        </div>
+
       </div>
 
       {/* Review Statistics */}

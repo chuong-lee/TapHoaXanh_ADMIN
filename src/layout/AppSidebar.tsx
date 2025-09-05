@@ -89,7 +89,7 @@ const navItems: NavItem[] = [
   {
     icon: <FaNewspaper className="w-6 h-6" />,
     name: "Quản lý bài viết",
-    path: "/article",
+    path: "/articles",
   },
 ];
 
