@@ -8,7 +8,7 @@ export interface Category {
   name?: string;
   slug?: string;
   parentId?: string;
-  image_url: string;
+  image_url?: string;
 }
 
 export interface CategoryWithChildren {

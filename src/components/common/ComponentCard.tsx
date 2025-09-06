@@ -6,17 +6,19 @@ import Label from "../form/Label";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import DatePicker from "../form/date-picker";
 
-interface FilterProps {
+export interface FilterProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
   options: Option[];
 }
 
-interface GetDateProps {
+export interface GetDateProps {
   label: string;
   titleId: string;
   onChange: (value: Date[]) => void;
+  onClear?: () => void;
+  type?: "date" | "month" | "year";
 }
 
 interface SearchProps {
@@ -83,15 +85,22 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
 
         {/* Date Filters */}
         {filterByDate && filterByDate.length > 0 && (
-          <div className="flex flex-wrap gap-4 w-full xl:w-auto">
+          <div className="flex flex-wrap gap-4 w-full xl:w-auto ">
             {filterByDate.map((filter, idx) => (
-              <DatePicker
-                id={filter.titleId}
-                label={filter.label}
+              <div
                 key={idx}
-                onChange={filter.onChange}
-                placeholder="Select a date"
-              />
+                className={filter.type === "year" ? "flatpickr-year-mode" : ""}
+              >
+                <DatePicker
+                  id={filter.titleId}
+                  label={filter.label}
+                  key={idx}
+                  onChange={filter.onChange}
+                  onClear={filter.onClear}
+                  placeholder="Select a date"
+                  type={filter.type}
+                />
+              </div>
             ))}
           </div>
         )}

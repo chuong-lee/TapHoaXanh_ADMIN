@@ -109,7 +109,7 @@ export default function FormEditProduct() {
         console.log("🚀 ~ fetchCategories ~ response:", response);
         setCategories(response.data);
       } catch (error) {
-        console.error("Lỗi khi lấy danh mục:", error);
+        console.error("Lỗi khi lấy danh mục 111:", error);
       }
     };
 
@@ -133,12 +133,12 @@ export default function FormEditProduct() {
           weight_unit: data.weight_unit || "",
           description: data.description || "",
           quantity: data.quantity || 0,
-          categoryId: data.category.id || 0,
+          categoryId: data.category?.id ?? null,
           brandId: data.brand.id || 0,
           purchase: data.purchase || 0,
         });
       } catch (error) {
-        console.error("Lỗi khi lấy danh mục:", error);
+        console.error("Lỗi khi lấy danh mục 222:", error);
       }
     };
 
@@ -271,6 +271,8 @@ export default function FormEditProduct() {
     }
   };
 
+  console.log("🚀 ~ FormEditProduct ~ product:", product);
+
   return (
     <ComponentCard title="">
       <form onSubmit={handleSubmit}>
@@ -382,7 +384,11 @@ export default function FormEditProduct() {
                 options={listCategories}
                 placeholder="Vui lòng chọn loại danh mục"
                 onChange={handleSelectCategory}
-                defaultValue={product?.categoryId.toString()}
+                defaultValue={
+                  product?.categoryId != null
+                    ? product.categoryId.toString()
+                    : undefined
+                } 
                 className="dark:bg-dark-900 w-full"
               />
 
@@ -437,7 +443,7 @@ export default function FormEditProduct() {
 
         <div className="flex justify-end space-x-4 mt-6">
           <button className="bg-gray-300 px-3 py-3 rounded-xl">
-            <Link href="/category">Huỷ</Link>
+            <Link href="/product">Huỷ</Link>
           </button>
           <button
             className="bg-blue-700 px-3 py-3 rounded-xl text-white"

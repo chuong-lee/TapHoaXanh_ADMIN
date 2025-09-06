@@ -40,3 +40,12 @@ export enum PaymentStatus {
   SUCCESS = "success",
   FAIL = "fail",
 }
+
+export interface OrderDetail {
+  id?: number;
+  orderCode: string;
+  productName: string;
+  unitPrice: number;
+  quantity: number;
+  productImage: string;
+}
