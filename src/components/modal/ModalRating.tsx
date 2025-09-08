@@ -15,19 +15,19 @@ import { toast } from "sonner";
 
 interface ProductButtonDeleteProps {
   voucherId: string | number;
-  voucherCode?: string;
+  customerName?: string;
 }
 
-export function VoucherButtonDelete({
+export function RatingButtonDelete({
   voucherId,
-  voucherCode,
+  customerName,
 }: ProductButtonDeleteProps) {
   const [open, setOpen] = useState(false);
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
       await deleteVoucher(voucherId);
-      toast.success(`Xóa voucher có mã ${voucherCode} thành công`);
+      toast.success(`Xóa voucher có mã ${customerName} thành công`);
       setOpen(false);
       setTimeout(() => {
         window.location.reload();
@@ -47,15 +47,15 @@ export function VoucherButtonDelete({
       <DialogContent className="sm:max-w-md z-[10000]">
         <DialogHeader>
           <DialogTitle className="uppercase">
-            Xóa voucher mã{" "}
+            Xóa đánh giá của khách hàng{" "}
             <span className="text-red-500 uppercase font-bold">
-              {voucherCode}
+              {customerName}
             </span>
           </DialogTitle>
           <DialogDescription className="text-[#000]">
-            Bạn có chắc muốn xóa mã voucher là{" "}
+            Bạn có chắc muốn xóa đánh giá của khách hàng{" "}
             <span className="text-red-500 uppercase font-bold">
-              {voucherCode}
+              {customerName}
             </span>{" "}
             không ?
           </DialogDescription>

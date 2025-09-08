@@ -26,13 +26,13 @@ export default function UserPage() {
   return (
     <div>
       <div>
-        <PageBreadcrumb pageTitle="Quản lý sản phẩm biến thể" />
+        <PageBreadcrumb pageTitle="Quản lý danh sách người dùng" />
         <div className="space-y-6">
           <ComponentCard
             hrefLink="/add-product-variant"
             filters={[
               {
-                label: "Lọc theo sản phẩm:",
+                label: "Lọc theo vai trò:",
                 value: selectedProductId,
                 onChange: handleSelectProduct,
                 options: productOptions,

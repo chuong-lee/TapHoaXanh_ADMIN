@@ -127,7 +127,7 @@ export default function DatePicker({
             }}
             className="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
           >
-            Clear
+            Xóa
           </button>
         </span>
       </div>
