@@ -1,34 +1,48 @@
 "use client";
 import api from "@/app/lib/axios";
-import { ArrowUpIcon, GroupIcon } from "lucide-react";
+import { GroupIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import Badge from "../ui/badge/Badge";
 
-export const EcommerceMetrics = () => {
+interface TitleHeaderProps {
+  year?: number | null;
+  month?: number | null;
+}
+
+export const EcommerceMetrics = ({ year, month }: TitleHeaderProps) => {
   const [numberOfUser, setNumberOfUser] = useState(0);
   const [numberOfOrder, setNumberOfOrder] = useState(0);
   const [numberOfRevenue, setNumberOfRevenue] = useState(0);
+  // Lấy số user
   useEffect(() => {
     const getNumberOfUser = async () => {
       const response = await api.get("/users/count");
       setNumberOfUser(response.data);
     };
     getNumberOfUser();
+  }, []);
 
+  // Lấy số order theo year
+  useEffect(() => {
     const getNumberOfOrder = async () => {
-      const response = await api.get("/order/count");
+      const response = await api.get("/order/count", {
+        params: { year, month },
+      });
       setNumberOfOrder(response.data);
     };
+    getNumberOfOrder();
+  }, [year, month]);
 
+  // Lấy tổng doanh thu
+  useEffect(() => {
     const getTotalRevenueSuccess = async () => {
-      const response = await api.get("/order/revenue");
+      const response = await api.get("/order/revenue", {
+        params: { year, month },
+      });
       setNumberOfRevenue(response.data);
     };
-    getNumberOfUser();
-    getNumberOfOrder();
     getTotalRevenueSuccess();
-  }, []);
+  }, [year, month]);
 
   function formatNumberWithComma(num: number): string {
     return num.toLocaleString("en-US"); // hoặc "vi-VN" nếu muốn dùng dấu chấm cho VN
@@ -53,10 +67,6 @@ export const EcommerceMetrics = () => {
                 {numberOfUser}
               </h4>
             </div>
-            <Badge color="success">
-              <ArrowUpIcon />
-              11.01%
-            </Badge>
           </div>
         </div>
       </Link>
@@ -75,10 +85,6 @@ export const EcommerceMetrics = () => {
               {totalRevenue}
             </h4>
           </div>
-          <Badge color="success">
-            <ArrowUpIcon />
-            11.01%
-          </Badge>
         </div>
       </div>
       {/* <!-- Metric Item End --> */}
@@ -98,11 +104,6 @@ export const EcommerceMetrics = () => {
                 {numberOfOrder}
               </h4>
             </div>
-
-            <Badge color="success">
-              <ArrowUpIcon />
-              11.01%
-            </Badge>
           </div>
         </div>
       </Link>

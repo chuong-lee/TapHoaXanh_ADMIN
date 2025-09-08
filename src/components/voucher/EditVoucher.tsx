@@ -177,7 +177,7 @@ export default function FormEditVoucher() {
         </div>
 
         <div className="flex justify-end space-x-4 mt-6">
-          <Link href="/category" className="bg-gray-300 px-3 py-3 rounded-xl">
+          <Link href="/voucher" className="bg-gray-300 px-3 py-3 rounded-xl">
             Huỷ
           </Link>
           <button

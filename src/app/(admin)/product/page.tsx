@@ -16,7 +16,10 @@ export default function Product() {
   const [searchInput, setSearchInput] = useState(""); // giá trị đang nhập
   const [searchTerm, setSearchTerm] = useState(""); // giá trị đã submit
 
-  const listCategories = handleLoadSelectOptions(allCategories, "id", "name");
+  const listCategories = handleLoadSelectOptions(allCategories, "id", "name", {
+    value: 'null',
+    label: "Sản phẩm không thuộc nhóm sản phẩm nào",
+  });
   const listBrands = handleLoadSelectOptions(allBrands, "id", "name");
 
   const handleSelectCategories = (value: string) => {

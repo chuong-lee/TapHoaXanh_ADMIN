@@ -11,10 +11,15 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { PopupViewDetailOrder } from "../modal/order/ViewDetailOrder";
 
 interface TitleHeaderProps {
   status?: string;
   search?: string;
+  start_date?: string;
+  end_date?: string;
+  month?: number;
+  year?: number;
 }
 
 const columns = [
@@ -26,9 +31,9 @@ const columns = [
 ];
 
 export enum StatusOrder {
-  SUCCESS = "Thành công",
-  ERROR = "Thất bại",
-  PENDING = "Đang xử lý",
+  SUCCESS = "Đã thanh toán",
+  ERROR = "Đã hủy",
+  PENDING = "Chưa thanh toán",
 }
 
 const statusColors: Record<StatusOrder, BadgeColor> = {
@@ -37,7 +42,14 @@ const statusColors: Record<StatusOrder, BadgeColor> = {
   [StatusOrder.ERROR]: "error",
 };
 
-const OrderTable: React.FC<TitleHeaderProps> = ({ status, search }) => {
+const OrderTable: React.FC<TitleHeaderProps> = ({
+  status,
+  search,
+  start_date,
+  end_date,
+  month,
+  year,
+}) => {
   const [allProducts, setAllProducts] = useState<OrderUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -46,7 +58,16 @@ const OrderTable: React.FC<TitleHeaderProps> = ({ status, search }) => {
     const getAllProducts = async () => {
       try {
         const response = await api.get("/order/search", {
-          params: { page, limit: 10, search, status },
+          params: {
+            page,
+            limit: 10,
+            search,
+            status,
+            start_date,
+            end_date,
+            month,
+            year,
+          },
         });
 
         setAllProducts(response.data.data);
@@ -58,7 +79,7 @@ const OrderTable: React.FC<TitleHeaderProps> = ({ status, search }) => {
     };
 
     getAllProducts();
-  }, [page, search, status]);
+  }, [page, search, status, start_date, end_date, month, year]);
 
   const getColorStatus = (status: string): StatusOrder => {
     switch (status) {
@@ -141,6 +162,15 @@ const OrderTable: React.FC<TitleHeaderProps> = ({ status, search }) => {
                           <Badge variant="solid" color={statusColors[status]}>
                             {status}
                           </Badge>
+                        </TableCell>
+                        <TableCell className="px-5 py-4 text-start">
+                          <div className="flex items-center gap-3">
+                            {item.orderCode && (
+                              <PopupViewDetailOrder
+                                orderCode={item.orderCode}
+                              />
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     );

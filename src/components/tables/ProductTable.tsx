@@ -27,6 +27,7 @@ const columns = [
   "Giá sản phẩm",
   "Giá giảm",
   "trạng thái",
+  "Lượt bán",
   "Hành động",
 ];
 
@@ -185,6 +186,9 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
                           >
                             {status.message}
                           </Badge>
+                        </TableCell>
+                        <TableCell className="px-5 py-4 text-start">
+                          {item.purchase}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
                           <div className="flex items-center gap-3">

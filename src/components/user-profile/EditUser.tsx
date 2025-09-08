@@ -131,7 +131,7 @@ export default function FormEditUser() {
 
         <div className="flex justify-end space-x-4 mt-6">
           <button className="bg-gray-300 px-3 py-3 rounded-xl">
-            <Link href="/category">Huỷ</Link>
+            <Link href="/profile">Huỷ</Link>
           </button>
           <button
             className="bg-blue-700 px-3 py-3 rounded-xl text-white"
