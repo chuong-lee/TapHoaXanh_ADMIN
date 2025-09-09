@@ -41,11 +41,6 @@ const navItems: NavItem[] = [
         pro: false,
       },
       {
-        name: "Sản phẩm biến thể",
-        path: "/product-variant",
-        pro: false,
-      },
-      {
         name: "Hinh ảnh sản phẩm",
         path: "/product-images",
         pro: false,
@@ -72,6 +67,11 @@ const navItems: NavItem[] = [
     icon: <FaCartPlus className="w-6 h-6" />,
     name: "Quản lý đơn hàng",
     path: "/order",
+  },
+  {
+    icon: <FaCartPlus className="w-6 h-6" />,
+    name: "Quản lý đánh giá",
+    path: "/rating",
   },
 ];
 

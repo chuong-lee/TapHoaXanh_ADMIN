@@ -295,7 +295,6 @@ export default function FormAddProduct() {
             <DatePicker
               id="date-picker"
               label="Ngày hết hạn"
-              placeholder="Select a date"
               onChange={handleSelectDate}
             />
             {errors.expiry_date && (

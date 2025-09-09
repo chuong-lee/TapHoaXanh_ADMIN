@@ -322,7 +322,6 @@ export default function FormEditProduct() {
             <DatePicker
               id="date-picker"
               label="Ngày hết hạn"
-              placeholder="Select a date"
               onChange={handleSelectDate}
               defaultDate={product.expiry_date}
             />

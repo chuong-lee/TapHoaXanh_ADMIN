@@ -137,7 +137,7 @@ export default function FormEditVoucher() {
             <DatePicker
               id="start-date"
               label="Ngày bắt đầu"
-              placeholder="Select a date"
+              placeholder="Lựa chọn ngày bắt đầu"
               onChange={handleSelectStartDate}
               defaultDate={voucher.start_date}
             />
@@ -146,7 +146,7 @@ export default function FormEditVoucher() {
             <DatePicker
               id="end-date"
               label="Ngày kết thúc"
-              placeholder="Select a date"
+              placeholder="Lựa chọn ngày kết thúc"
               onChange={handleSelectEndDate}
               defaultDate={voucher.end_date}
             />

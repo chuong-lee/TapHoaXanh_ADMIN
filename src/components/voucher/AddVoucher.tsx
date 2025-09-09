@@ -120,7 +120,7 @@ export default function FormAddVoucher() {
             <DatePicker
               id="start-date"
               label="Ngày bắt đầu"
-              placeholder="Select a date"
+              placeholder="Chọn ngày bắt đầu"
               onChange={handleSelectStartDate}
             />
           </div>
@@ -128,7 +128,7 @@ export default function FormAddVoucher() {
             <DatePicker
               id="end-date"
               label="Ngày kết thúc"
-              placeholder="Select a date"
+              placeholder="Chọn ngày kết thúc"
               onChange={handleSelectEndDate}
             />
           </div>

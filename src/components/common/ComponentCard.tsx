@@ -97,7 +97,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
                   key={idx}
                   onChange={filter.onChange}
                   onClear={filter.onClear}
-                  placeholder="Select a date"
+                  placeholder="Lựa chọn ngày"
                   type={filter.type}
                 />
               </div>
