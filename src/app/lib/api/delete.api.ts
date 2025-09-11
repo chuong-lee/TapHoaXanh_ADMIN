@@ -33,3 +33,7 @@ export const deleteVoucher = async (voucherId: number | string) => {
 export const deleteProductImage = async (id: number | string) => {
   await safeDelete(`/product-images/${id}`);
 };
+
+export const deleteNewsById = async (id: number | string) => {
+  await safeDelete(`/news/${id}`);
+};

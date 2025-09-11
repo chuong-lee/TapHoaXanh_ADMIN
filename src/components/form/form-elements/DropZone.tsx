@@ -1,24 +1,38 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ComponentCard from "../../common/ComponentCard";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 
 type DropzoneComponentProps = {
-  onChangeImages?: (files: File[]) => void;
+  onChangeImages?: (files: (File | string)[]) => void;
+  initialImages?: string[]; // <-- thêm prop
 };
 
 const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
   onChangeImages,
+  initialImages = [],
 }) => {
-  const [listImages, setListImages] = useState<File[]>([]);
+  const [listImages, setListImages] =
+    useState<(File | string)[]>(initialImages);
+
+  useEffect(() => {
+    if (initialImages?.length) {
+      setListImages(initialImages);
+    }
+  }, [initialImages]);
+
   const onDrop = (acceptedFiles: File[]) => {
     const newList = [...listImages, ...acceptedFiles];
-    // Handle file uploads here
     setListImages(newList);
-    if (onChangeImages) {
-      onChangeImages(newList);
-    }
+    onChangeImages?.(newList); // trả luôn toàn bộ danh sách
+  };
+  console.log("listImages", listImages);
+
+  const handleRemoveImage = (index: number) => {
+    const newList = listImages.filter((_, i) => i !== index);
+    setListImages(newList);
+    onChangeImages?.(newList); // trả luôn toàn bộ danh sách
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -31,17 +45,8 @@ const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
     },
   });
 
-  const handleRemoveImage = (index: number) => {
-    const newList = listImages.filter((_, i) => i !== index);
-    setListImages(newList);
-
-    if (onChangeImages) {
-      onChangeImages(newList);
-    }
-  };
-
   return (
-    <ComponentCard title="Thêm hình ảnh sản phẩm">
+    <ComponentCard title="">
       <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-brand-500 dark:border-gray-700 rounded-xl hover:border-brand-500">
         <form
           {...getRootProps()}
@@ -97,13 +102,13 @@ const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
         {listImages.map((item, index) => (
           <div
             key={index}
-            className="flex items-center justify-center w-[200px] h[200px] relative"
+            className="flex items-center justify-center w-[200px] h-[200px] relative"
           >
             <Image
               width={200}
               height={200}
-              src={URL.createObjectURL(item)}
-              alt={item.name}
+              src={item instanceof File ? URL.createObjectURL(item) : item}
+              alt={item instanceof File ? item.name : `image-${index}`}
               className="rounded-md w-full h-full object-cover"
             />
             <button
