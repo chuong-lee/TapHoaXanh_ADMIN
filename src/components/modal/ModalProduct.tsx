@@ -1,7 +1,7 @@
 import {
+  deletedRatingByProductId,
   deleteProductById,
   deleteProductImagesByProductId,
-  deleteProductVariantByProductId,
 } from "@/app/lib/api/delete.api";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { handleAxiosErrorInTable } from "@/interface/IError";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -30,7 +31,7 @@ export function ProductButtonDelete({
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      await deleteProductVariantByProductId(productId);
+      await deletedRatingByProductId(productId);
       await deleteProductImagesByProductId(productId);
       await deleteProductById(productId);
       toast.success(`Xóa sản phẩm ${productName} thành công`);
@@ -39,7 +40,8 @@ export function ProductButtonDelete({
         window.location.reload();
       }, 1500); // đợi 1.5s rồi F5
     } catch (error) {
-      toast.error(`Lỗi khi xóa: ${error}`);
+      const msg = handleAxiosErrorInTable(error);
+      toast.error(`Lỗi khi xóa: ${msg}`);
     }
   };
 
@@ -60,9 +62,8 @@ export function ProductButtonDelete({
             <span className="text-red-500 uppercase font-bold">
               {productName}
             </span>{" "}
-            thì bạn phải <span className="font-bold">xóa toàn bộ biến thể</span>{" "}
-            và <span className="font-bold">hình ảnh</span> liên quan đến sản
-            phẩm này
+            thì bạn phải <span className="font-bold">Xóa hình ảnh</span> liên
+            quan đến sản phẩm này
           </DialogDescription>
         </DialogHeader>
 
