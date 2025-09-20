@@ -87,7 +87,7 @@ const RatingTable: React.FC<TitleHeaderProps> = ({ search }) => {
                       className="text-center py-4 text-gray-500"
                       colSpan={5}
                     >
-                      Không có voucher nào.
+                      Không có đánh giá nào.
                     </TableCell>
                   </TableRow>
                 ) : (
