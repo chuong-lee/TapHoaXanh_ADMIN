@@ -15,7 +15,7 @@ export default function AddImages() {
   const [productImage, setProductImage] = useState<ProductImages>({
     productId: 0,
   });
-  const [selectImage, setSelectImage] = useState<File[]>([]);
+  const [selectImage, setSelectImage] = useState<(File | string)[]>([]);
   const [products, setProducts] = useState(listProduct);
   const router = useRouter();
 
@@ -63,16 +63,19 @@ export default function AddImages() {
       });
       setProductImage({ productId: 0 });
       setSelectImage([]); // reset file
-      showSuccessAndRedirect("Thêm hình ảnh thành công!", router, "/product-images");
+      showSuccessAndRedirect(
+        "Thêm hình ảnh thành công!",
+        router,
+        "/product-images"
+      );
     } catch (error) {
       console.error("Lỗi khi thêm biến thể sản phẩm:", error);
     }
   };
 
-  const handleSelectImages = async (files: File[]) => {
+  const handleSelectImages = async (files: (File | string)[]) => {
     setSelectImage(files);
   };
-
 
   return (
     <ComponentCard title="">

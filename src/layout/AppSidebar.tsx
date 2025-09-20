@@ -73,6 +73,11 @@ const navItems: NavItem[] = [
     name: "Quản lý đánh giá",
     path: "/rating",
   },
+  {
+    icon: <FaCartPlus className="w-6 h-6" />,
+    name: "Quản lý bài viết",
+    path: "/news",
+  },
 ];
 
 const AppSidebar: React.FC = () => {

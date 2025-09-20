@@ -298,6 +298,7 @@ export default function FormEditProduct() {
               name="barcode"
               value={product.barcode}
               onChange={handleChange}
+              disabled={true}
             />
             {(errors.barcode || errorMessage) && (
               <p className="text-red-500 text-sm mt-1">

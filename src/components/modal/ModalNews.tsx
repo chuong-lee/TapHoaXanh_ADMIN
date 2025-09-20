@@ -1,8 +1,4 @@
-import {
-  deletedRatingByProductId,
-  deleteProductById,
-  deleteProductImagesByProductId,
-} from "@/app/lib/api/delete.api";
+import { deleteNewsById } from "@/app/lib/api/delete.api";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,34 +10,27 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { handleAxiosErrorInTable } from "@/interface/IError";
 import { useState } from "react";
 import { toast } from "sonner";
 
 interface ProductButtonDeleteProps {
-  productId: string | number;
-  productName: string;
+  id: string | number;
+  name: string;
 }
 
-export function ProductButtonDelete({
-  productId,
-  productName,
-}: ProductButtonDeleteProps) {
+export function NewsButtonDelete({ id, name }: ProductButtonDeleteProps) {
   const [open, setOpen] = useState(false);
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      await deletedRatingByProductId(productId);
-      await deleteProductImagesByProductId(productId);
-      await deleteProductById(productId);
-      toast.success(`Xóa sản phẩm ${productName} thành công`);
+      await deleteNewsById(id);
+      toast.success(`Xóa bài viết ${name} thành công`);
       setOpen(false);
       setTimeout(() => {
         window.location.reload();
       }, 1500); // đợi 1.5s rồi F5
     } catch (error) {
-      const msg = handleAxiosErrorInTable(error);
-      toast.error(`Lỗi khi xóa: ${msg}`);
+      toast.error(`Lỗi khi xóa: ${error}`);
     }
   };
 
@@ -54,16 +43,11 @@ export function ProductButtonDelete({
       </DialogTrigger>
       <DialogContent className="sm:max-w-md z-[10000]">
         <DialogHeader>
-          <DialogTitle className="uppercase">
-            Xóa sản phẩm {productName}
-          </DialogTitle>
+          <DialogTitle className="uppercase">Xóa bài viết {name}</DialogTitle>
           <DialogDescription className="text-[#000]">
-            Nếu bạn muốn xóa sản phẩm{" "}
-            <span className="text-red-500 uppercase font-bold">
-              {productName}
-            </span>{" "}
-            thì bạn phải <span className="font-bold">Xóa hình ảnh</span> liên
-            quan đến sản phẩm này
+            Bạn có chắc muốn xóa bài viết{" "}
+            <span className="text-red-500 uppercase font-bold">{name}</span>{" "}
+            không
           </DialogDescription>
         </DialogHeader>
 

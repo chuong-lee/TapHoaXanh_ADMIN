@@ -15,7 +15,7 @@ export default function EditImages() {
   const [productImage, setProductImage] = useState<ProductImages>({
     productId: 0,
   });
-  const [selectImage, setSelectImage] = useState<File[]>([]);
+  const [selectImage, setSelectImage] = useState<(File | string)[]>([]);
   const [products, setProducts] = useState(listProduct);
   const router = useRouter();
 
@@ -73,7 +73,7 @@ export default function EditImages() {
     }
   };
 
-  const handleSelectImages = async (files: File[]) => {
+  const handleSelectImages = async (files: (File | string)[]) => {
     setSelectImage(files);
   };
 

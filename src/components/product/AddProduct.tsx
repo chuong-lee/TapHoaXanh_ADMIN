@@ -4,7 +4,6 @@ import api from "@/app/lib/axios";
 import { showSuccessAndRedirect } from "@/app/utils/helper";
 import { Brand } from "@/interface/IBrand";
 import { Category } from "@/interface/ICategory";
-import { handleAxiosError } from "@/interface/IError";
 import { defaultProduct, Product } from "@/interface/IProduct";
 import Image from "next/image";
 import Link from "next/link";
@@ -26,7 +25,6 @@ export default function FormAddProduct() {
     {}
   );
 
-  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
   const [selectFile, setSelectFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -43,13 +41,6 @@ export default function FormAddProduct() {
 
     if (name === "weight_unit" && Number(value) < 0) {
       errorMsg = "Đơn vị khối lượng không được âm";
-    }
-
-    if (name === "barcode") {
-      const barcodePattern = /^SP\d{4}$/; // SP + 4 chữ số
-      if (!barcodePattern.test(value)) {
-        errorMsg = "Barcode phải đúng định dạng SPxxxx (ví dụ: SP0001)";
-      }
     }
 
     if (name === "quantity" && Number(value) < 0) {
@@ -97,7 +88,6 @@ export default function FormAddProduct() {
       }
       return updated;
     });
-    setErrorMessage("");
   };
 
   useEffect(() => {
@@ -183,7 +173,7 @@ export default function FormAddProduct() {
       setErrors({});
       showSuccessAndRedirect("Thêm sản phẩm thành công!", router, "/product");
     } catch (error) {
-      handleAxiosError(error, setErrorMessage);
+      console.log("Lỗi", error);
     }
   };
 
@@ -263,21 +253,7 @@ export default function FormAddProduct() {
               <p className="text-red-500 text-sm mt-1">{errors.name}</p>
             )}
           </div>
-          <div>
-            <Label>Mã sản phẩm</Label>
-            <Input
-              type="text"
-              placeholder="Nhập tên sản phẩm"
-              name="barcode"
-              value={product.barcode}
-              onChange={handleChange}
-            />
-            {(errors.barcode || errorMessage) && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.barcode || errorMessage}
-              </p>
-            )}
-          </div>
+
           <div>
             <Label>Xuất xứ</Label>
             <Input
