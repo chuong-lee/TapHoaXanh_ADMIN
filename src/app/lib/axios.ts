@@ -14,7 +14,8 @@ function onRefreshed(token: string) {
 
 const api = axios.create({
   // baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://taphoaxanh-be.vercel.app/api/",
+  baseURL:
+    process.env.NEXT_PUBLIC_API_URL || "http://taphoaxanh-be.vercel.app/",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -58,7 +59,7 @@ api.interceptors.response.use(
         isRefreshing = true;
         try {
           const res = await axios.post(
-            process.env.NEXT_PUBLIC_API_URL + "/api/auth/refresh-token",
+            process.env.NEXT_PUBLIC_API_URL + "/auth/refresh-token",
             {
               refresh_token,
             }
