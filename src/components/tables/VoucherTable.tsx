@@ -34,12 +34,14 @@ export enum StatusVoucher {
   VALID = "Còn hạn",
   ALMOST_EXPIRED = "Sắp hết hạn",
   EXPIRED = "Hết hạn",
+  NOT_STARTED = "Chưa bắt đầu",
 }
 
 const statusColors: Record<StatusVoucher, BadgeColor> = {
   [StatusVoucher.VALID]: "success",
   [StatusVoucher.ALMOST_EXPIRED]: "warning",
   [StatusVoucher.EXPIRED]: "error",
+  [StatusVoucher.NOT_STARTED]: "info",
 };
 
 const VoucherTable: React.FC<TitleHeaderProps> = ({
@@ -73,22 +75,32 @@ const VoucherTable: React.FC<TitleHeaderProps> = ({
     startDate: string,
     endDate: string
   ): { status: StatusVoucher; message?: string } => {
+    const now = new Date();
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    // Tính số ngày chênh lệch
-    const diffTime = end.getTime() - start.getTime();
+    // Tính số ngày từ hiện tại đến ngày kết thúc
+    const diffTime = end.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     let status: StatusVoucher;
     let message: string;
 
-    if (diffDays < 0) {
+    // Kiểm tra nếu voucher chưa bắt đầu
+    if (now < start) {
+      status = StatusVoucher.NOT_STARTED;
+      message = "Chưa bắt đầu";
+    } else if (diffDays < 0) {
+      // Voucher đã hết hạn
       status = StatusVoucher.EXPIRED;
       message = "Hết hạn";
+    } else if (diffDays <= 7) {
+      // Voucher sắp hết hạn (còn 7 ngày hoặc ít hơn)
+      status = StatusVoucher.ALMOST_EXPIRED;
+      message = `Còn ${diffDays} ngày`;
     } else {
-      status =
-        diffDays <= 7 ? StatusVoucher.ALMOST_EXPIRED : StatusVoucher.VALID;
+      // Voucher còn hạn
+      status = StatusVoucher.VALID;
       message = `Còn ${diffDays} ngày`;
     }
 

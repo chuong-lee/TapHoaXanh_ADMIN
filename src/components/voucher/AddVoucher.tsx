@@ -14,22 +14,90 @@ import { showSuccessAndRedirect } from "@/app/utils/helper";
 
 export default function FormAddVoucher() {
   const [voucher, setVoucher] = useState<Voucher>(defaultVoucher);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const router = useRouter();
 
   const listType: Option[] = [
     { value: VoucherType.PERCENTAGE, label: "Giảm theo %" },
     { value: VoucherType.NORMAL, label: "Giảm theo số tiền" },
   ];
+
+  // Validation functions
+  const validateValue = (value: number, type: string, maxDiscount: number) => {
+    if (type === VoucherType.PERCENTAGE) {
+      if (value > 100) {
+        return "Giá trị giảm theo % không được vượt quá 100%";
+      }
+      if (value <= 0) {
+        return "Giá trị giảm theo % phải lớn hơn 0";
+      }
+    } else if (type === VoucherType.NORMAL) {
+      if (value > maxDiscount) {
+        return "Giá trị giảm không được vượt quá mức giảm tối đa";
+      }
+      if (value <= 0) {
+        return "Giá trị giảm phải lớn hơn 0";
+      }
+    }
+    return "";
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    // Validate value field
+    const valueError = validateValue(
+      Number(voucher.value),
+      voucher.type || "",
+      Number(voucher.max_discount)
+    );
+    if (valueError) {
+      newErrors.value = valueError;
+    }
+
+    // Validate max_discount
+    if (Number(voucher.max_discount) <= 0) {
+      newErrors.max_discount = "Mức giảm tối đa phải lớn hơn 0";
+    }
+
+    // Validate min_order_value
+    if (Number(voucher.min_order_value) < 0) {
+      newErrors.min_order_value = "Giá trị đơn hàng tối thiểu không được âm";
+    }
+
+    // Validate quantity
+    if (Number(voucher.quantity) <= 0) {
+      newErrors.quantity = "Số lượng phải lớn hơn 0";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setVoucher((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate form before submitting
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       const data = { ...voucher };
       await api.post("/voucher", data);
@@ -44,6 +112,15 @@ export default function FormAddVoucher() {
       ...prev,
       type: value,
     }));
+
+    // Clear value error when type changes
+    if (errors.value) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.value;
+        return newErrors;
+      });
+    }
   };
 
   const handleSelectStartDate = (date: Date[]) => {
@@ -92,29 +169,40 @@ export default function FormAddVoucher() {
           <div>
             <Label>Mức giảm tối đa</Label>
             <Input
-              type="text"
+              type="number"
               value={voucher.max_discount}
               name="max_discount"
               onChange={handleChange}
             />
+            {errors.max_discount && (
+              <p className="text-red-500 text-sm mt-1">{errors.max_discount}</p>
+            )}
           </div>
           <div>
             <Label>Giá trị đơn hàng tối thiểu</Label>
             <Input
-              type="text"
+              type="number"
               value={voucher.min_order_value}
               name="min_order_value"
               onChange={handleChange}
             />
+            {errors.min_order_value && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.min_order_value}
+              </p>
+            )}
           </div>
           <div>
             <Label>Số lượng</Label>
             <Input
-              type="text"
+              type="number"
               value={voucher.quantity}
               name="quantity"
               onChange={handleChange}
             />
+            {errors.quantity && (
+              <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>
+            )}
           </div>
           <div>
             <DatePicker
@@ -148,11 +236,19 @@ export default function FormAddVoucher() {
           <div>
             <Label>Giá trị giảm</Label>
             <Input
-              type="text"
+              type="number"
               value={voucher.value}
               name="value"
               onChange={handleChange}
+              placeholder={
+                voucher.type === VoucherType.PERCENTAGE
+                  ? "Nhập % giảm (0-100)"
+                  : "Nhập số tiền giảm"
+              }
             />
+            {errors.value && (
+              <p className="text-red-500 text-sm mt-1">{errors.value}</p>
+            )}
           </div>
         </div>
 
