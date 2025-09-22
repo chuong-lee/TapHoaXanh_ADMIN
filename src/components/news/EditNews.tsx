@@ -30,7 +30,6 @@ export default function FormEditNews() {
       try {
         const response = await api.get(`/news/detail/${id}`);
         const data = response.data;
-        console.log("🚀 ~ fetchNews ~ data:", data);
         setNews({
           name: data.name || "",
           type: data.type || "",
@@ -111,9 +110,6 @@ export default function FormEditNews() {
   const handleSelectImages = async (files: (File | string)[]) => {
     setSelectImage(files);
   };
-
-  console.log("selectImage", selectImage);
-  console.log("old images", news.images);
 
   return (
     <ComponentCard title="">

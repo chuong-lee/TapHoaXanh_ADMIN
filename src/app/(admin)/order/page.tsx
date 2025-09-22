@@ -37,7 +37,7 @@ export default function OrderPage() {
   const listStatus: Option[] = [
     { value: "success", label: StatusOrder.SUCCESS },
     { value: "pending", label: StatusOrder.PENDING },
-    { value: "error", label: StatusOrder.ERROR },
+    { value: "cancelled", label: StatusOrder.CANCELLED },
   ];
 
   const listTime: Option[] = [

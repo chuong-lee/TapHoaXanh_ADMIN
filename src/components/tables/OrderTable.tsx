@@ -1,6 +1,12 @@
 "use client";
 import api from "@/app/lib/axios";
-import { OrderUser } from "@/interface/IOrder";
+import {
+  OrderUser,
+  PaymentMethod,
+  PaymentStatus,
+  PaymentMethodDisplay,
+  PaymentStatusDisplay,
+} from "@/interface/IOrder";
 import React, { useEffect, useState } from "react";
 import { PaginationPage } from "../pagination/Pagination";
 import Badge, { BadgeColor } from "../ui/badge/Badge";
@@ -27,19 +33,34 @@ const columns = [
   "Tên khách hàng",
   "SĐT",
   "Tổng giá",
+  "Phương thức thanh toán",
+  "Trạng thái thanh toán",
   "Trạng thái",
+  "Hành động",
 ];
 
 export enum StatusOrder {
-  SUCCESS = "Đã thanh toán",
-  ERROR = "Đã hủy",
-  PENDING = "Chưa thanh toán",
+  PENDING = "pending",
+  CONFIRMED = "confirmed",
+  DELIVERED = "delivered",
+  SUCCESS = "success",
+  CANCELLED = "cancelled",
+}
+
+export enum StatusOrderDisplay {
+  PENDING = "Chờ xử lý",
+  CONFIRMED = "Đã xác nhận",
+  DELIVERED = "Đang giao hàng",
+  SUCCESS = "Đã hoàn thành",
+  CANCELLED = "Đã hủy",
 }
 
 const statusColors: Record<StatusOrder, BadgeColor> = {
   [StatusOrder.SUCCESS]: "success",
   [StatusOrder.PENDING]: "warning",
-  [StatusOrder.ERROR]: "error",
+  [StatusOrder.CANCELLED]: "error",
+  [StatusOrder.DELIVERED]: "primary",
+  [StatusOrder.CONFIRMED]: "info",
 };
 
 const OrderTable: React.FC<TitleHeaderProps> = ({
@@ -87,10 +108,68 @@ const OrderTable: React.FC<TitleHeaderProps> = ({
         return StatusOrder.SUCCESS;
       case "pending":
         return StatusOrder.PENDING;
-      case "error":
-        return StatusOrder.ERROR;
+      case "confirmed":
+        return StatusOrder.CONFIRMED;
+      case "delivered":
+        return StatusOrder.DELIVERED;
+      case "cancelled":
+        return StatusOrder.CANCELLED;
       default:
-        return StatusOrder.PENDING; // fallback or choose appropriate default
+        return StatusOrder.PENDING;
+    }
+  };
+
+  const getStatusDisplay = (status: StatusOrder): string => {
+    switch (status) {
+      case StatusOrder.PENDING:
+        return StatusOrderDisplay.PENDING;
+      case StatusOrder.CONFIRMED:
+        return StatusOrderDisplay.CONFIRMED;
+      case StatusOrder.DELIVERED:
+        return StatusOrderDisplay.DELIVERED;
+      case StatusOrder.SUCCESS:
+        return StatusOrderDisplay.SUCCESS;
+      case StatusOrder.CANCELLED:
+        return StatusOrderDisplay.CANCELLED;
+      default:
+        return StatusOrderDisplay.PENDING;
+    }
+  };
+
+  const getPaymentMethodDisplay = (paymentMethod: string): string => {
+    switch (paymentMethod) {
+      case PaymentMethod.COD:
+        return PaymentMethodDisplay.COD;
+      case PaymentMethod.VNPAY:
+        return PaymentMethodDisplay.VNPAY;
+      default:
+        return "Chưa chọn";
+    }
+  };
+
+  const getPaymentStatusDisplay = (paymentStatus: string): string => {
+    switch (paymentStatus) {
+      case PaymentStatus.PENDING:
+        return PaymentStatusDisplay.PENDING;
+      case PaymentStatus.SUCCESS:
+        return PaymentStatusDisplay.SUCCESS;
+      case PaymentStatus.FAIL:
+        return PaymentStatusDisplay.FAIL;
+      default:
+        return PaymentStatusDisplay.PENDING;
+    }
+  };
+
+  const getPaymentStatusColor = (paymentStatus: string): BadgeColor => {
+    switch (paymentStatus) {
+      case PaymentStatus.SUCCESS:
+        return "success";
+      case PaymentStatus.PENDING:
+        return "warning";
+      case PaymentStatus.FAIL:
+        return "error";
+      default:
+        return "warning";
     }
   };
 
@@ -132,7 +211,7 @@ const OrderTable: React.FC<TitleHeaderProps> = ({
                   <TableRow>
                     <TableCell
                       className="text-center py-4 text-gray-500"
-                      colSpan={5}
+                      colSpan={8}
                     >
                       Không có đơn hàng nào.
                     </TableCell>
@@ -140,34 +219,90 @@ const OrderTable: React.FC<TitleHeaderProps> = ({
                 ) : (
                   allProducts.map((item) => {
                     const formatTotalPrice = formatNumberWithComma(
-                      item.totalPrice
+                      item.total_price
                     );
 
-                    const status = getColorStatus(item.status);
+                    const currentStatus = getColorStatus(item.status);
+
+                    // Lấy thông tin payment từ mảng payments (lấy payment đầu tiên)
+                    const payment =
+                      item.payments && item.payments.length > 0
+                        ? item.payments[0]
+                        : null;
+                    const paymentMethod = payment?.payment_method || "";
+                    const paymentStatus = payment?.status || "";
+
                     return (
                       <TableRow key={item.id}>
                         <TableCell className="px-5 py-4 text-start">
-                          {item.orderCode}
+                          {item.order_code}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
-                          {item.userName}
+                          {item.user.name}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
-                          {item.userPhone}
+                          {item.user.phone}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
                           {formatTotalPrice}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
-                          <Badge variant="solid" color={statusColors[status]}>
-                            {status}
+                          {getPaymentMethodDisplay(paymentMethod)}
+                        </TableCell>
+                        <TableCell className="px-5 py-4 text-start">
+                          <Badge
+                            variant="solid"
+                            color={getPaymentStatusColor(paymentStatus)}
+                          >
+                            {getPaymentStatusDisplay(paymentStatus)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="px-5 py-4 text-start">
+                          <Badge
+                            variant="solid"
+                            color={statusColors[currentStatus]}
+                          >
+                            {getStatusDisplay(currentStatus)}
                           </Badge>
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
                           <div className="flex items-center gap-3">
-                            {item.orderCode && (
+                            {item.order_code && (
                               <PopupViewDetailOrder
-                                orderCode={item.orderCode}
+                                orderCode={item.order_code}
+                                orderId={item.id}
+                                currentStatus={item.status}
+                                paymentMethod={paymentMethod}
+                                paymentStatus={paymentStatus}
+                                onStatusUpdate={() => {
+                                  // Refresh data after status update
+                                  const refreshData = async () => {
+                                    try {
+                                      const response = await api.get(
+                                        "/order/search",
+                                        {
+                                          params: {
+                                            page,
+                                            limit: 10,
+                                            search,
+                                            status,
+                                            start_date,
+                                            end_date,
+                                            month,
+                                            year,
+                                          },
+                                        }
+                                      );
+                                      setAllProducts(response.data.data);
+                                    } catch (error) {
+                                      console.error(
+                                        "Lỗi khi refresh data:",
+                                        error
+                                      );
+                                    }
+                                  };
+                                  refreshData();
+                                }}
                               />
                             )}
                           </div>

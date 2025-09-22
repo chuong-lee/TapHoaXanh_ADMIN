@@ -46,7 +46,6 @@ export default function FormAddNews() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(1);
     const formData = new FormData();
     formData.append("name", news.name);
     formData.append("description", news.description);

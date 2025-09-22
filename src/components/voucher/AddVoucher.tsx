@@ -125,7 +125,6 @@ export default function FormAddVoucher() {
 
   const handleSelectStartDate = (date: Date[]) => {
     const selectedDate = date[0]; // lấy ngày đầu tiên
-    console.log("🚀 ~ handleSelectStartDate ~ selectedDate:", selectedDate);
     if (!selectedDate) return;
 
     if (voucher.end_date && selectedDate >= new Date(voucher.end_date)) {
@@ -142,7 +141,6 @@ export default function FormAddVoucher() {
 
   const handleSelectEndDate = (date: Date[]) => {
     const selectedDate = date[0]; // hoặc date[1] nếu bạn muốn lấy ngày cuối
-    console.log("🚀 ~ handleSelectEndDate ~ selectedDate:", selectedDate);
     if (!selectedDate) return;
 
     if (voucher.start_date && selectedDate <= new Date(voucher.start_date)) {

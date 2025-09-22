@@ -27,7 +27,6 @@ const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
     setListImages(newList);
     onChangeImages?.(newList); // trả luôn toàn bộ danh sách
   };
-  console.log("listImages", listImages);
 
   const handleRemoveImage = (index: number) => {
     const newList = listImages.filter((_, i) => i !== index);
