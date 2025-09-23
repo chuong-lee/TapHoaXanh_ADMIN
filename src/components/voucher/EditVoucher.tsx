@@ -96,7 +96,6 @@ export default function FormEditVoucher() {
     const getVoucherById = async () => {
       const response = await api.get(`voucher/${id}`);
       const data = response.data;
-      console.log("🚀 ~ getVoucherById ~ data:", data);
       setVoucher({ ...data });
     };
     getVoucherById();
@@ -141,7 +140,6 @@ export default function FormEditVoucher() {
 
   const handleSelectStartDate = (date: Date[]) => {
     const selectedDate = date[0]; // lấy ngày đầu tiên
-    console.log("🚀 ~ handleSelectStartDate ~ selectedDate:", selectedDate);
     if (!selectedDate) return;
 
     if (voucher.end_date && selectedDate >= new Date(voucher.end_date)) {
@@ -158,7 +156,6 @@ export default function FormEditVoucher() {
 
   const handleSelectEndDate = (date: Date[]) => {
     const selectedDate = date[0]; // hoặc date[1] nếu bạn muốn lấy ngày cuối
-    console.log("🚀 ~ handleSelectEndDate ~ selectedDate:", selectedDate);
     if (!selectedDate) return;
 
     if (voucher.start_date && selectedDate <= new Date(voucher.start_date)) {

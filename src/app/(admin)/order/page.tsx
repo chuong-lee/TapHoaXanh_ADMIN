@@ -3,26 +3,31 @@ import ComponentCard, { GetDateProps } from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { Option } from "@/components/form/Select";
 import OrderTable, { StatusOrder } from "@/components/tables/OrderTable";
+import { PaymentStatus, PaymentMethod } from "@/interface/IOrder";
 import { useState } from "react";
 import { toast } from "sonner";
 
 enum OrderStatsType {
   DAY = "Theo ngày",
+  TODAY = "Hôm nay",
   MONTH = "Theo tháng",
   YEAR = "Theo năm",
 }
 
 const mapStatsTypeToDatePicker: Record<
   OrderStatsType,
-  "date" | "month" | "year"
+  "date" | "month" | "year" | "today"
 > = {
   [OrderStatsType.DAY]: "date",
+  [OrderStatsType.TODAY]: "today",
   [OrderStatsType.MONTH]: "month",
   [OrderStatsType.YEAR]: "year",
 };
 
 export default function OrderPage() {
   const [selectedOrder, setSelectedOrder] = useState("");
+  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [searchInput, setSearchInput] = useState(""); // giá trị đang nhập
   const [searchTerm, setSearchTerm] = useState(""); // giá trị đã submit
 
@@ -37,11 +42,23 @@ export default function OrderPage() {
   const listStatus: Option[] = [
     { value: "success", label: StatusOrder.SUCCESS },
     { value: "pending", label: StatusOrder.PENDING },
-    { value: "error", label: StatusOrder.ERROR },
+    { value: "cancelled", label: StatusOrder.CANCELLED },
+  ];
+
+  const listPaymentStatus: Option[] = [
+    { value: PaymentStatus.SUCCESS, label: "Đã thanh toán" },
+    { value: PaymentStatus.PENDING, label: "Chưa thanh toán" },
+    { value: PaymentStatus.FAIL, label: "Thanh toán thất bại" },
+  ];
+
+  const listPaymentMethod: Option[] = [
+    { value: PaymentMethod.VNPAY, label: "VNPay" },
+    { value: PaymentMethod.COD, label: "Thanh toán khi nhận hàng" },
   ];
 
   const listTime: Option[] = [
     { value: OrderStatsType.DAY, label: OrderStatsType.DAY },
+    { value: OrderStatsType.TODAY, label: OrderStatsType.TODAY },
     { value: OrderStatsType.MONTH, label: OrderStatsType.MONTH },
     { value: OrderStatsType.YEAR, label: OrderStatsType.YEAR },
   ];
@@ -50,12 +67,36 @@ export default function OrderPage() {
     setSelectedOrder(value);
   };
 
+  const handleSelectPaymentStatus = (value: string) => {
+    setSelectedPaymentStatus(value);
+  };
+
+  const handleSelectPaymentMethod = (value: string) => {
+    setSelectedPaymentMethod(value);
+  };
+
   const handleSelectTime = (value: string) => {
     setSelectedTime(value as OrderStatsType);
     setEndDate(null);
     setStartDate(null);
     setMonth(null);
     setYear(null);
+
+    // Nếu chọn "Hôm nay", tự động set ngày hôm nay từ đầu ngày đến cuối ngày
+    if (value === OrderStatsType.TODAY) {
+      const today = new Date();
+
+      // Đầu ngày (00:00:00)
+      const startOfDay = new Date(today);
+      startOfDay.setHours(0, 0, 0, 0);
+
+      // Cuối ngày (23:59:59)
+      const endOfDay = new Date(today);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      setStartDate(startOfDay);
+      setEndDate(endOfDay);
+    }
   };
 
   const handleSearchInput = (value: string) => {
@@ -129,23 +170,23 @@ export default function OrderPage() {
         onClear: () => setEndDate(null),
       },
     ],
+    today: [], // Không cần date picker cho "Hôm nay"
     month: [
       {
         label: "Chọn tháng",
         titleId: "selected-month",
         onChange: handleSelectMonth,
         onClear: () => setMonth(null),
-        type: mapStatsTypeToDatePicker[selectedTime],
+        type: "month",
       },
     ],
-
     year: [
       {
         label: "Chọn năm",
         titleId: "selected-year",
         onChange: handleSelectYear,
         onClear: () => setYear(null),
-        type: mapStatsTypeToDatePicker[selectedTime],
+        type: "year",
       },
     ],
   };
@@ -164,6 +205,30 @@ export default function OrderPage() {
                 options: listStatus,
               },
               {
+                label: "Lọc theo trạng thái thanh toán:",
+                value: selectedPaymentStatus,
+                onChange: handleSelectPaymentStatus,
+                options: listPaymentStatus,
+              },
+              {
+                label: "Lọc theo phương thức thanh toán:",
+                value: selectedPaymentMethod,
+                onChange: handleSelectPaymentMethod,
+                options: listPaymentMethod,
+              },
+            ]}
+            search={{
+              value: searchInput,
+              onChange: handleSearchInput,
+            }}
+            onSubmit={handleSubmitSearch}
+          >
+            <div></div>
+          </ComponentCard>
+
+          <ComponentCard
+            filters={[
+              {
                 label: "Lựa chọn chế độ xem đơn hàng:",
                 value: selectedTime,
                 onChange: handleSelectTime,
@@ -171,18 +236,16 @@ export default function OrderPage() {
               },
             ]}
             filterByDate={filterOptions[mapStatsTypeToDatePicker[selectedTime]]}
-            search={{
-              value: searchInput,
-              onChange: handleSearchInput,
-            }}
-            onSubmit={handleSubmitSearch}
           >
             <OrderTable
               status={selectedOrder}
+              paymentStatus={selectedPaymentStatus}
+              paymentMethod={selectedPaymentMethod}
               search={searchTerm}
               start_date={startDate?.toISOString()}
               end_date={endDate?.toISOString()}
               month={month!}
+              year={year!}
             />
           </ComponentCard>
         </div>

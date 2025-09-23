@@ -8,22 +8,30 @@ export interface Order {
   userId: number;
 }
 
+export interface Payment {
+  payment_method: string;
+  status: string;
+}
+
+export interface User {
+  name: string;
+  phone: string;
+}
+
 export interface OrderUser {
   id: number;
-  orderCode: string;
+  order_code: string;
   status: string;
-  userName: string;
-  userPhone: string;
-  totalPrice: number;
+  total_price: number;
+  payments: Payment[];
+  user: User;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export enum PaymentMethod {
-  DEFAULT = "",
-  STRIPE = "stripe",
-  MOMO = "momo",
-  VNPAY = "vnpay",
-  BANK = "bank",
-  BANK_TRANSFER = "bank_transfer",
+  COD = "COD",
+  VNPAY = "VNPAY",
 }
 
 export const defaultOrder: Order = {
@@ -39,6 +47,17 @@ export enum PaymentStatus {
   PENDING = "pending",
   SUCCESS = "success",
   FAIL = "fail",
+}
+
+export enum PaymentMethodDisplay {
+  COD = "Thanh toán khi nhận hàng",
+  VNPAY = "VNPay",
+}
+
+export enum PaymentStatusDisplay {
+  PENDING = "Chờ thanh toán",
+  SUCCESS = "Đã thanh toán",
+  FAIL = "Thanh toán thất bại",
 }
 
 export interface OrderDetail {

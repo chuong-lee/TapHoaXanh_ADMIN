@@ -14,6 +14,8 @@ import {
   FaMoneyBillTransfer,
   FaRegCalendarCheck,
   FaRegCircleUser,
+  FaStar,
+  FaNewspaper,
 } from "react-icons/fa6";
 // import SidebarWidget from "./SidebarWidget";
 
@@ -69,12 +71,12 @@ const navItems: NavItem[] = [
     path: "/order",
   },
   {
-    icon: <FaCartPlus className="w-6 h-6" />,
+    icon: <FaStar className="w-6 h-6" />,
     name: "Quản lý đánh giá",
     path: "/rating",
   },
   {
-    icon: <FaCartPlus className="w-6 h-6" />,
+    icon: <FaNewspaper className="w-6 h-6" />,
     name: "Quản lý bài viết",
     path: "/news",
   },
