@@ -7,7 +7,7 @@ import {
   PaymentMethodDisplay,
   PaymentStatusDisplay,
 } from "@/interface/IOrder";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { PaginationPage } from "../pagination/Pagination";
 import Badge, { BadgeColor } from "../ui/badge/Badge";
 import {
@@ -21,6 +21,8 @@ import { PopupViewDetailOrder } from "../modal/order/ViewDetailOrder";
 
 interface TitleHeaderProps {
   status?: string;
+  paymentStatus?: string;
+  paymentMethod?: string;
   search?: string;
   start_date?: string;
   end_date?: string;
@@ -65,6 +67,8 @@ const statusColors: Record<StatusOrder, BadgeColor> = {
 
 const OrderTable: React.FC<TitleHeaderProps> = ({
   status,
+  paymentStatus,
+  paymentMethod,
   search,
   start_date,
   end_date,
@@ -75,6 +79,28 @@ const OrderTable: React.FC<TitleHeaderProps> = ({
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  // useCallback để tránh tạo lại function mỗi lần render
+  const refreshDataAfterStatusUpdate = useCallback(async () => {
+    try {
+      const response = await api.get("/order/search", {
+        params: {
+          page,
+          limit: 10,
+          search,
+          status,
+          // Không truyền payment_status và payment_method
+          start_date,
+          end_date,
+          month,
+          year,
+        },
+      });
+      setAllProducts(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi refresh data:", error);
+    }
+  }, [page, search, status, start_date, end_date, month, year]);
   useEffect(() => {
     const getAllProducts = async () => {
       try {
@@ -84,6 +110,8 @@ const OrderTable: React.FC<TitleHeaderProps> = ({
             limit: 10,
             search,
             status,
+            payment_status: paymentStatus,
+            payment_method: paymentMethod,
             start_date,
             end_date,
             month,
@@ -100,7 +128,17 @@ const OrderTable: React.FC<TitleHeaderProps> = ({
     };
 
     getAllProducts();
-  }, [page, search, status, start_date, end_date, month, year]);
+  }, [
+    page,
+    search,
+    status,
+    paymentStatus,
+    paymentMethod,
+    start_date,
+    end_date,
+    month,
+    year,
+  ]);
 
   const getColorStatus = (status: string): StatusOrder => {
     switch (status) {
@@ -186,15 +224,13 @@ const OrderTable: React.FC<TitleHeaderProps> = ({
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
                   {columns.map((item, index) => (
-                    <>
-                      <TableCell
-                        isHeader
-                        className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
-                        key={index}
-                      >
-                        {item}
-                      </TableCell>
-                    </>
+                    <TableCell
+                      key={index}
+                      isHeader
+                      className="px-5 py-3 font-bold text-gray-500 text-start text-theme-xs dark:text-gray-400 uppercase"
+                    >
+                      {item}
+                    </TableCell>
                   ))}
                 </TableRow>
               </TableHeader>
@@ -274,35 +310,7 @@ const OrderTable: React.FC<TitleHeaderProps> = ({
                                 currentStatus={item.status}
                                 paymentMethod={paymentMethod}
                                 paymentStatus={paymentStatus}
-                                onStatusUpdate={() => {
-                                  // Refresh data after status update
-                                  const refreshData = async () => {
-                                    try {
-                                      const response = await api.get(
-                                        "/order/search",
-                                        {
-                                          params: {
-                                            page,
-                                            limit: 10,
-                                            search,
-                                            status,
-                                            start_date,
-                                            end_date,
-                                            month,
-                                            year,
-                                          },
-                                        }
-                                      );
-                                      setAllProducts(response.data.data);
-                                    } catch (error) {
-                                      console.error(
-                                        "Lỗi khi refresh data:",
-                                        error
-                                      );
-                                    }
-                                  };
-                                  refreshData();
-                                }}
+                                onStatusUpdate={refreshDataAfterStatusUpdate}
                               />
                             )}
                           </div>

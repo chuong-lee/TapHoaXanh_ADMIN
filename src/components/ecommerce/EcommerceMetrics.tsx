@@ -1,6 +1,6 @@
 "use client";
 import api from "@/app/lib/axios";
-import { GroupIcon } from "lucide-react";
+import { Users, DollarSign, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -55,7 +55,7 @@ export const EcommerceMetrics = ({ year, month }: TitleHeaderProps) => {
       <Link href={"/profile"}>
         <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
           <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-            <GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
+            <Users className="text-gray-800 size-6 dark:text-white/90" />
           </div>
 
           <div className="flex items-end justify-between mt-5">
@@ -73,7 +73,7 @@ export const EcommerceMetrics = ({ year, month }: TitleHeaderProps) => {
 
       <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
         <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-          <GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
+          <DollarSign className="text-gray-800 size-6 dark:text-white/90" />
         </div>
 
         <div className="flex items-end justify-between mt-5">
@@ -93,7 +93,7 @@ export const EcommerceMetrics = ({ year, month }: TitleHeaderProps) => {
       <Link href={"/order"}>
         <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
           <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-            <GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
+            <ShoppingCart className="text-gray-800 size-6 dark:text-white/90" />
           </div>
           <div className="flex items-end justify-between mt-5">
             <div>
