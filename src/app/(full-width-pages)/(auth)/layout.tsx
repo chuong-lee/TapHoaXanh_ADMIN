@@ -2,7 +2,6 @@ import GridShape from "@/components/common/GridShape";
 
 import { ThemeProvider } from "@/context/ThemeContext";
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 
 export default function AuthLayout({

@@ -2,8 +2,8 @@
 import ComponentCard, { GetDateProps } from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { Option } from "@/components/form/Select";
-import OrderTable, { StatusOrder, StatusOrderDisplay } from "@/components/tables/OrderTable";
-import { PaymentStatus, PaymentMethod } from "@/interface/IOrder";
+import OrderTable, { StatusOrderDisplay } from "@/components/tables/OrderTable";
+import { PaymentMethod, PaymentStatus } from "@/interface/IOrder";
 import { useState } from "react";
 import { toast } from "sonner";
 
