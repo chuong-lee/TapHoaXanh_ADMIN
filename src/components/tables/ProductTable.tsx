@@ -16,7 +16,7 @@ import {
 } from "../ui/table";
 
 interface TitleHeaderProps {
-  category?: string;
+  categoryId?: string;
   brand?: string;
   search?: string;
 }
@@ -44,7 +44,7 @@ const statusColors: Record<Status, BadgeColor> = {
 };
 
 const ProductTable: React.FC<TitleHeaderProps> = ({
-  category,
+  categoryId,
   brand,
   search,
 }) => {
@@ -56,7 +56,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
     const getAllProducts = async () => {
       try {
         const response = await api.get("/products/search", {
-          params: { page, limit: 10, category, brand, search },
+          params: { page, limit: 10, categoryId, brand, search },
         });
 
         setAllProducts(response.data.data);
@@ -68,7 +68,7 @@ const ProductTable: React.FC<TitleHeaderProps> = ({
     };
 
     getAllProducts();
-  }, [page, category, brand, search]);
+  }, [page, categoryId, brand, search]);
 
   const handleCheckStatusProduct = (
     expiry: string | Date

@@ -71,6 +71,17 @@ const VoucherTable: React.FC<TitleHeaderProps> = ({
     getAllProducts();
   }, [page, search, start_date, end_date]);
 
+  const getTypeDisplay = (type: string) => {
+    switch (type) {
+      case "NORMAL":
+        return "Giảm theo số tiền";
+      case "PERCENTAGE":
+        return "Giảm theo %";
+      default:
+        return type;
+    }
+  };
+
   const calculatorExpiredDate = (
     startDate: string,
     endDate: string
@@ -169,7 +180,7 @@ const VoucherTable: React.FC<TitleHeaderProps> = ({
                           {item.quantity}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
-                          {item.type}
+                          {getTypeDisplay(item.type || "")}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-start">
                           {startDate}

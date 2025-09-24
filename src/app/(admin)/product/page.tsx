@@ -66,7 +66,7 @@ export default function Product() {
             onSubmit={handleSubmitSearch}
           >
             <ProductTable
-              category={selectedCategoryId}
+              categoryId={selectedCategoryId}
               brand={selectedBrandId}
               search={searchTerm}
             />

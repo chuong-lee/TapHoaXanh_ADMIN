@@ -223,7 +223,7 @@ export default function FormAddVoucher() {
             <div className="relative">
               <Select
                 options={listType}
-                placeholder="Vui lòng chọn thư mục cha"
+                placeholder="Vui lòng chọn loại voucher"
                 onChange={handleSelectChange}
                 className="dark:bg-dark-900"
               />

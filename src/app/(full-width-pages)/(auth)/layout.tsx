@@ -20,16 +20,17 @@ export default function AuthLayout({
               {/* <!-- ===== Common Grid Shape Start ===== --> */}
               <GridShape />
               <div className="flex flex-col items-center max-w-xs">
-                <Link href="/" className="block mb-4">
+                <div className="flex items-center gap-2 text-white uppercase mb-3">
                   <Image
-                    width={231}
-                    height={48}
-                    src="./images/logo/auth-logo.svg"
+                    width={45}
+                    height={45}
+                    src="/images/brand/brand-01.svg"
                     alt="Logo"
                   />
-                </Link>
-                <p className="text-center text-gray-400 dark:text-white/60">
-                  Free and Open-Source Tailwind CSS Admin Dashboard Template
+                  <span> Tạp hóa xanh ADMIN</span>
+                </div>
+                <p className="text-center uppercase text-gray-400 dark:text-white/60">
+                  Chào mừng đến phần mềm quản lý
                 </p>
               </div>
             </div>

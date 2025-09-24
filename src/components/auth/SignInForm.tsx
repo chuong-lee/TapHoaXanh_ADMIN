@@ -118,7 +118,7 @@ export default function SignInForm() {
                     size="sm"
                     onClick={handleLoginForm}
                   >
-                    Sign in
+                    Đăng nhập
                   </Button>
                 </div>
               </div>

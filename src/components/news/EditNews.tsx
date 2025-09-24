@@ -119,7 +119,7 @@ export default function FormEditNews() {
             <Label>Tên bài viết</Label>
             <Input
               type="text"
-              placeholder="Nhập mã voucher"
+              placeholder="Nhập tên bài viết"
               value={news.name}
               name="name"
               onChange={handleChange}
@@ -129,7 +129,7 @@ export default function FormEditNews() {
             <Label>Loại bài viết</Label>
             <Input
               type="text"
-              placeholder="Nhập mã voucher"
+              placeholder="Nhập loại bài viết"
               value={news.type}
               name="type"
               onChange={handleChange}

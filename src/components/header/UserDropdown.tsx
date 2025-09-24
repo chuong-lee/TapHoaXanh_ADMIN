@@ -115,7 +115,7 @@ export default function UserDropdown() {
               fill=""
             />
           </svg>
-          Sign out
+          Đăng xuất
         </Button>
       </Dropdown>
     </div>

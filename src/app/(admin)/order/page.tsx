@@ -2,7 +2,7 @@
 import ComponentCard, { GetDateProps } from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { Option } from "@/components/form/Select";
-import OrderTable, { StatusOrder } from "@/components/tables/OrderTable";
+import OrderTable, { StatusOrder, StatusOrderDisplay } from "@/components/tables/OrderTable";
 import { PaymentStatus, PaymentMethod } from "@/interface/IOrder";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -40,9 +40,11 @@ export default function OrderPage() {
   );
 
   const listStatus: Option[] = [
-    { value: "success", label: StatusOrder.SUCCESS },
-    { value: "pending", label: StatusOrder.PENDING },
-    { value: "cancelled", label: StatusOrder.CANCELLED },
+    { value: "success", label: StatusOrderDisplay.SUCCESS },
+    { value: "pending", label: StatusOrderDisplay.PENDING },
+    { value: "cancelled", label: StatusOrderDisplay.CANCELLED },
+    { value: "confirmed", label: StatusOrderDisplay.CONFIRMED },
+    { value: "delivered", label: StatusOrderDisplay.DELIVERED },
   ];
 
   const listPaymentStatus: Option[] = [
